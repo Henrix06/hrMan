@@ -411,6 +411,10 @@
             <a href="#" class="text-xs text-slate-400 hover:text-primary transition-colors">{{ $link }}</a>
             @endforeach
         </div>
+        <a href="https://henrix.co.zw" target="_blank" rel="noopener noreferrer"
+            class="text-xs text-slate-400 hover:text-primary transition-colors flex items-center gap-1">
+            ⚡ Powered by Henrix
+        </a>
     </div>
 </footer>
 

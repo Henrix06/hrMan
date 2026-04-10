@@ -21,7 +21,7 @@ new class extends Component
                 <span class="material-symbols-outlined">bubble_chart</span>
             </div>
             <div>
-                <h1 class="text-xl font-bold tracking-tight text-indigo-700 dark:text-indigo-400 font-headline">Ethereal HR</h1>
+                <h1 class="text-xl font-bold tracking-tight text-indigo-700 dark:text-indigo-400 font-headline">uMsizi</h1>
                 <p class="text-xs text-slate-500 dark:text-slate-400">Fluid Professional</p>
             </div>
         </div>
@@ -179,6 +179,13 @@ new class extends Component
             <span class="material-symbols-outlined">logout</span>
             <span class="text-sm font-headline">Log Out</span>
         </button>
+        <div class="pt-3 mt-1 border-t border-slate-200/40 dark:border-white/5">
+            <a href="https://henrix.co.zw" target="_blank" rel="noopener noreferrer"
+                class="flex items-center justify-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-600 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">
+                <span class="material-symbols-outlined text-[12px]">bolt</span>
+                Powered by Henrix
+            </a>
+        </div>
     </div>
 </aside>
 
