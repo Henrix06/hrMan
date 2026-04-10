@@ -87,6 +87,11 @@ new class extends Component
                 <span class="material-symbols-outlined text-[20px]">campaign</span>
                 <span class="font-headline text-sm">Announcements</span>
             </a>
+            <a href="{{ route('folders.index') }}" wire:navigate
+                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('folders.*') ? 'bg-white/80 dark:bg-white/10 text-indigo-600 dark:text-indigo-400 font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-white/40 dark:hover:bg-white/5' }}">
+                <span class="material-symbols-outlined text-[20px]">folder_shared</span>
+                <span class="font-headline text-sm">Folders</span>
+            </a>
             {{-- Assets: all roles see their own assets; managers/HR see full management --}}
             @role('Manager|HR Admin|Super Admin')
             <a href="{{ route('assets.index') }}" wire:navigate

@@ -20,6 +20,7 @@ use App\Livewire\Notifications\NotificationCenter;
 use App\Livewire\Payroll\PayrollHistory;
 use App\Livewire\Payroll\RunPayroll;
 use App\Livewire\Payroll\ViewPayslip;
+use App\Livewire\Folders\FolderManager;
 use App\Livewire\Tasks\TaskList;
 use Illuminate\Support\Facades\Route;
 
@@ -56,6 +57,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('tasks')->name('tasks.')->group(function () {
         Route::get('/', TaskList::class)->name('index');
+    });
+
+    Route::prefix('folders')->name('folders.')->group(function () {
+        Route::get('/', FolderManager::class)->name('index');
     });
 
     Route::prefix('announcements')->name('announcements.')->group(function () {

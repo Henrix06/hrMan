@@ -18,7 +18,7 @@
     <div class="glass-card rounded-[2rem] overflow-hidden">
         @forelse($notifications as $notif)
         @php
-            $icons = ['task_assigned'=>'task_alt','task_comment'=>'comment','announcement'=>'campaign','leave_approved'=>'check_circle','leave_rejected'=>'cancel','default'=>'notifications'];
+            $icons = ['task_assigned'=>'task_alt','task_comment'=>'comment','announcement'=>'campaign','leave_approved'=>'check_circle','leave_rejected'=>'cancel','folder_shared'=>'folder_shared','default'=>'notifications'];
             $icon = $icons[$notif->type] ?? $icons['default'];
         @endphp
         <div class="flex items-start gap-4 p-5 border-b border-slate-100 last:border-0 {{ !$notif->isRead() ? 'bg-primary/5' : '' }} hover:bg-slate-50/50 transition-colors">

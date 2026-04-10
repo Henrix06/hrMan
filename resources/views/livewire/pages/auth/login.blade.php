@@ -18,35 +18,35 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
-<div class="space-y-8">
-    <div class="space-y-2">
-        <h2 class="font-headline text-3xl font-bold text-on-surface">Welcome back</h2>
-        <p class="text-on-surface-variant font-body text-sm">Please enter your details to sign in.</p>
+<div class="space-y-7">
+    <div>
+        <h2 class="font-headline font-black text-3xl text-slate-900 mb-1.5">Welcome back</h2>
+        <p class="text-slate-400 text-sm">Sign in to your uMsizi account.</p>
     </div>
 
     @if (session('status'))
-        <div class="px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm">
-            {{ session('status') }}
-        </div>
+    <div class="px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm">
+        {{ session('status') }}
+    </div>
     @endif
 
-    <form wire:submit="login" class="space-y-5">
-        <div class="space-y-2">
-            <label for="email" class="block font-label text-sm font-semibold text-on-surface ml-1">Email Address</label>
+    <form wire:submit="login" class="space-y-4">
+        <div>
+            <label for="email" class="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Email Address</label>
             <input wire:model="form.email" id="email" type="email" name="email"
                 placeholder="name@company.com" required autofocus autocomplete="username"
                 class="auth-input"/>
             <x-input-error :messages="$errors->get('form.email')" class="auth-error"/>
         </div>
 
-        <div class="space-y-2">
-            <div class="flex justify-between items-center ml-1">
-                <label for="password" class="block font-label text-sm font-semibold text-on-surface">Password</label>
+        <div>
+            <div class="flex items-center justify-between mb-1.5">
+                <label for="password" class="block text-xs font-semibold text-slate-500 uppercase tracking-widest">Password</label>
                 @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" wire:navigate
-                        class="text-xs font-semibold text-primary hover:text-primary-dim transition-colors">
-                        Forgot Password?
-                    </a>
+                <a href="{{ route('password.request') }}" wire:navigate
+                    class="text-xs font-semibold text-primary hover:text-primary-dim transition-colors">
+                    Forgot password?
+                </a>
                 @endif
             </div>
             <input wire:model="form.password" id="password" type="password" name="password"
@@ -55,56 +55,50 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-error :messages="$errors->get('form.password')" class="auth-error"/>
         </div>
 
-        <div class="flex items-center gap-2 ml-1">
+        <div class="flex items-center gap-2.5 pt-1">
             <input wire:model="form.remember" id="remember" type="checkbox" name="remember"
-                class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"/>
-            <label for="remember" class="text-sm text-on-surface-variant">Keep me signed in</label>
+                class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary focus:ring-offset-0"/>
+            <label for="remember" class="text-sm text-slate-500 select-none">Keep me signed in</label>
         </div>
 
         <button type="submit" wire:loading.attr="disabled"
-            class="w-full h-14 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-headline font-bold text-lg shadow-lg shadow-primary/20 hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60">
-            Sign In
+            class="w-full h-13 py-3.5 rounded-xl bg-primary text-white font-headline font-bold text-base shadow-md shadow-primary/25 hover:bg-primary-dim active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+            <span wire:loading.remove>Sign In</span>
+            <span wire:loading class="flex items-center gap-2">
+                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+                Signing in…
+            </span>
         </button>
     </form>
 
-    <div class="relative flex items-center py-2">
-        <div class="flex-grow border-t border-surface-variant"></div>
-        <span class="flex-shrink mx-4 text-outline-variant text-xs font-semibold uppercase tracking-widest">Or</span>
-        <div class="flex-grow border-t border-surface-variant"></div>
-    </div>
-
-    @if (Route::has('register'))
-        <p class="text-center text-on-surface-variant font-body text-sm">
-            Don't have an account?
-            <a href="{{ route('register') }}" wire:navigate class="text-primary font-bold hover:underline">Create an account</a>
-        </p>
-    @endif
-
-    @php
-        $demoAccounts = collect(config('demo_accounts', []));
-    @endphp
+    @php $demoAccounts = collect(config('demo_accounts', [])); @endphp
     @if ($demoAccounts->isNotEmpty())
-        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5 space-y-4">
-            <div class="flex items-start justify-between gap-3">
-                <div>
-                    <h3 class="font-headline text-base font-bold text-slate-900">Demo Accounts</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Use any of these to explore the portal.</p>
-                </div>
-                <span class="rounded-full bg-white border border-slate-200 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">Seeded</span>
+    <div class="rounded-2xl border border-slate-100 bg-slate-50 p-5 space-y-3">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="font-headline font-bold text-sm text-slate-900">Demo Accounts</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Click any to auto-fill credentials.</p>
             </div>
-            <div class="space-y-2">
-                @foreach ($demoAccounts as $account)
-                    <div class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                        <div>
-                            <div class="text-sm font-bold text-slate-900">{{ $account['role'] }}</div>
-                            <div class="text-xs text-slate-500">{{ $account['email'] }}</div>
-                        </div>
-                        <div class="text-xs text-slate-500">
-                            pw: <span class="font-bold text-slate-800">{{ $account['password'] }}</span>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+            <span class="rounded-full bg-primary/10 text-primary px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest">Seeded</span>
         </div>
+        <div class="space-y-2">
+            @foreach ($demoAccounts as $account)
+            <button type="button"
+                wire:click="$set('form.email', '{{ $account['email'] }}')"
+                class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm flex items-center justify-between gap-2 hover:border-primary/30 hover:bg-primary/5 transition-colors text-left group">
+                <div>
+                    <div class="text-xs font-bold text-slate-900 group-hover:text-primary transition-colors">{{ $account['role'] }}</div>
+                    <div class="text-[11px] text-slate-400">{{ $account['email'] }}</div>
+                </div>
+                <div class="text-[11px] text-slate-400 flex-shrink-0">
+                    pw: <span class="font-bold text-slate-700">{{ $account['password'] }}</span>
+                </div>
+            </button>
+            @endforeach
+        </div>
+    </div>
     @endif
 </div>
