@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4e45e4"/>
+      <stop offset="100%" stop-color="#6760fd"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background -->
+  <rect width="32" height="32" rx="8" fill="url(#bg)"/>
+  <!-- Bubble chart icon (simplified SVG representation of Material bubble_chart) -->
+  <!-- Large bubble top-right -->
+  <circle cx="20" cy="10" r="5" fill="white" opacity="0.95"/>
+  <!-- Medium bubble bottom-left -->
+  <circle cx="10" cy="20" r="4" fill="white" opacity="0.85"/>
+  <!-- Small bubble bottom-right -->
+  <circle cx="22" cy="22" r="2.5" fill="white" opacity="0.75"/>
+  <!-- Tiny bubble top-left -->
+  <circle cx="9" cy="10" r="2" fill="white" opacity="0.65"/>
+</svg>

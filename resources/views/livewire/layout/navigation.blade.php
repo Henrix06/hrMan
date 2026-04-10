@@ -210,14 +210,81 @@ new class extends Component
         </button>
 
         {{-- Notifications --}}
-        <button class="relative w-9 h-9 flex items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            onclick="window.location='{{ route('notifications.index') }}'">
-            <span class="material-symbols-outlined text-sm">notifications</span>
-            @php $unread = auth()->user()->unreadNotificationsCount(); @endphp
-            @if($unread > 0)
-            <span class="absolute top-1 right-1 w-4 h-4 bg-error rounded-full border-2 border-white dark:border-slate-900 text-white text-[9px] font-bold flex items-center justify-center">{{ $unread > 9 ? '9+' : $unread }}</span>
-            @endif
-        </button>
+        @php
+            $unread = auth()->user()->unreadNotificationsCount();
+            $recentNotifs = \App\Models\HrNotification::where('user_id', auth()->id())
+                ->orderByDesc('created_at')
+                ->limit(6)
+                ->get();
+        @endphp
+        <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+            <button
+                class="relative w-9 h-9 flex items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                onclick="window.location='{{ route('notifications.index') }}'">
+                <span class="material-symbols-outlined text-sm">notifications</span>
+                @if($unread > 0)
+                <span class="absolute top-1 right-1 w-4 h-4 bg-error rounded-full border-2 border-white dark:border-slate-900 text-white text-[9px] font-bold flex items-center justify-center">{{ $unread > 9 ? '9+' : $unread }}</span>
+                @endif
+            </button>
+
+            {{-- Hover dropdown --}}
+            <div x-show="open" x-cloak
+                x-transition:enter="transition ease-out duration-150"
+                x-transition:enter-start="opacity-0 translate-y-1"
+                x-transition:enter-end="opacity-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-100"
+                x-transition:leave-start="opacity-100 translate-y-0"
+                x-transition:leave-end="opacity-0 translate-y-1"
+                class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl shadow-slate-900/10 border border-slate-100 dark:border-white/5 z-50 overflow-hidden">
+
+                {{-- Header --}}
+                <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/5">
+                    <span class="text-sm font-bold text-slate-800 dark:text-slate-100 font-headline">Notifications</span>
+                    @if($unread > 0)
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-error/10 text-error">{{ $unread }} unread</span>
+                    @else
+                    <span class="text-[10px] text-slate-400">All caught up</span>
+                    @endif
+                </div>
+
+                {{-- List --}}
+                <div class="max-h-72 overflow-y-auto divide-y divide-slate-50 dark:divide-white/5">
+                    @forelse($recentNotifs as $notif)
+                    @php
+                        $icons = ['task_assigned'=>'task_alt','task_comment'=>'comment','announcement'=>'campaign','leave_approved'=>'check_circle','leave_rejected'=>'cancel','folder_shared'=>'folder_shared','default'=>'notifications'];
+                        $icon = $icons[$notif->type] ?? $icons['default'];
+                    @endphp
+                    <div class="flex items-start gap-3 px-4 py-3 {{ !$notif->isRead() ? 'bg-primary/[0.03]' : '' }} hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0 mt-0.5">
+                            <span class="material-symbols-outlined text-[14px]">{{ $icon }}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 leading-snug">{{ $notif->title }}</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">{{ $notif->message }}</p>
+                            <p class="text-[10px] text-slate-300 dark:text-slate-600 mt-1">{{ $notif->created_at->diffForHumans() }}</p>
+                        </div>
+                        @if(!$notif->isRead())
+                        <div class="w-2 h-2 rounded-full bg-primary flex-shrink-0 mt-1.5"></div>
+                        @endif
+                    </div>
+                    @empty
+                    <div class="py-10 text-center text-slate-400">
+                        <span class="material-symbols-outlined text-3xl block mb-2 opacity-40">notifications_none</span>
+                        <p class="text-xs">No notifications yet.</p>
+                    </div>
+                    @endforelse
+                </div>
+
+                {{-- Footer --}}
+                <div class="px-4 py-2.5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
+                    <a href="{{ route('notifications.index') }}"
+                        class="text-xs font-bold text-primary hover:underline flex items-center justify-center gap-1">
+                        View all notifications
+                        <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+        </div>
 
         {{-- User --}}
         <div class="flex items-center gap-3">
