@@ -127,9 +127,9 @@
                     "uMsizi transformed how we manage our team. It's the HR tool we always wished existed."
                 </p>
                 <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-xs font-bold">VM</div>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-xs font-bold">MM</div>
                     <div>
-                        <div class="text-xs font-semibold text-slate-800">Vusani Mhlophe</div>
+                        <div class="text-xs font-semibold text-slate-800">Moses Mthombeni</div>
                         <div class="text-[10px] text-slate-400">CEO, Luminance Creative</div>
                     </div>
                 </div>
