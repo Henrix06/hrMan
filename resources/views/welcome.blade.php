@@ -371,8 +371,8 @@
             "uMsizi has completely transformed how we view human resources. It's no longer a back-office burden — it's a strategic advantage our employees actually enjoy using."
         </blockquote>
         <div class="flex flex-col items-center gap-2">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white font-bold">ER</div>
-            <div class="font-headline font-semibold text-slate-900 text-sm">Elena Rodriguez</div>
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white font-bold">VM</div>
+            <div class="font-headline font-semibold text-slate-900 text-sm">Vusani Mhlophe</div>
             <div class="text-slate-400 text-xs">CEO at Luminance Creative</div>
         </div>
     </div>
