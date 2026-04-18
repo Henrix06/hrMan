@@ -68,8 +68,15 @@ class RolePermissionSeeder extends Seeder
             'approve claims',
         ];
 
+        $realEstatePermissions = [
+            'real_estate.view',
+            'real_estate.manage_leases',
+            'real_estate.manage_maintenance',
+            'real_estate.manage_invoices',
+        ];
+
         // Create all permissions
-        $allPermissions = array_merge($userPermissions, $managerPermissions, $hrPermissions, $adminPermissions, $assetPermissions, $accountPermissions);
+        $allPermissions = array_merge($userPermissions, $managerPermissions, $hrPermissions, $adminPermissions, $assetPermissions, $accountPermissions, $realEstatePermissions);
         
         foreach ($allPermissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
@@ -77,15 +84,15 @@ class RolePermissionSeeder extends Seeder
 
         // Create roles and assign permissions
         $employeeRole = Role::firstOrCreate(['name' => 'Employee']);
-        $employeeRole->syncPermissions(array_merge($userPermissions, ['view assets', 'view accounts']));
+        $employeeRole->syncPermissions(array_merge($userPermissions, ['view assets', 'view accounts', 'real_estate.view']));
 
         $managerRole = Role::firstOrCreate(['name' => 'Manager']);
-        $managerRole->syncPermissions(array_merge($userPermissions, $managerPermissions, ['view assets', 'assign assets', 'view accounts', 'approve claims']));
+        $managerRole->syncPermissions(array_merge($userPermissions, $managerPermissions, ['view assets', 'assign assets', 'view accounts', 'approve claims', 'real_estate.view']));
 
         $hrAdminRole = Role::firstOrCreate(['name' => 'HR Admin']);
-        $hrAdminRole->syncPermissions(array_merge($userPermissions, $managerPermissions, $hrPermissions, $assetPermissions, $accountPermissions));
+        $hrAdminRole->syncPermissions(array_merge($userPermissions, $managerPermissions, $hrPermissions, $assetPermissions, $accountPermissions, $realEstatePermissions));
 
         $superAdminRole = Role::firstOrCreate(['name' => 'Super Admin']);
-        $superAdminRole->syncPermissions(array_merge($userPermissions, $managerPermissions, $hrPermissions, $adminPermissions, $assetPermissions, $accountPermissions));
+        $superAdminRole->syncPermissions(array_merge($userPermissions, $managerPermissions, $hrPermissions, $adminPermissions, $assetPermissions, $accountPermissions, $realEstatePermissions));
     }
 }

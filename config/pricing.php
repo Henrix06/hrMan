@@ -1,0 +1,113 @@
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Available Modules
+    |--------------------------------------------------------------------------
+    */
+    'modules' => [
+        'employee_management' => 'Employee Management',
+        'accounting'          => 'Accounting & Claims',
+        'leave_management'    => 'Leave Management',
+        'payroll'             => 'Payroll Processing',
+        'asset_management'    => 'Asset Management',
+        'task_management'     => 'Task Management',
+        'announcements'       => 'Announcements',
+        'chat'                => 'Team Chat',
+        'audit_logs'          => 'Audit Logs',
+        'departments'         => 'Department Management',
+        'real_estate'         => 'Real Estate Management',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Plans
+    |--------------------------------------------------------------------------
+    | monthly_price : price in USD per month
+    | yearly_price  : price in USD per year (billed annually)
+    | employee_limit: max employees (null = unlimited)
+    | modules       : list of included module keys
+    */
+    'plans' => [
+
+        'free' => [
+            'name'           => 'Free',
+            'description'    => 'Perfect for small teams getting started.',
+            'monthly_price'  => 0,
+            'yearly_price'   => 0,
+            'employee_limit' => 10,
+            'highlighted'    => false,
+            'badge'          => null,
+            'modules'        => [
+                'employee_management',
+                'accounting',
+                'departments',
+            ],
+        ],
+
+        'starter' => [
+            'name'           => 'Starter',
+            'description'    => 'For growing teams that need HR essentials.',
+            'monthly_price'  => 29,
+            'yearly_price'   => 290,   // ~2 months free
+            'employee_limit' => 25,
+            'highlighted'    => false,
+            'badge'          => null,
+            'modules'        => [
+                'employee_management',
+                'accounting',
+                'departments',
+                'leave_management',
+                'payroll',
+                'announcements',
+            ],
+        ],
+
+        'professional' => [
+            'name'           => 'Professional',
+            'description'    => 'Full HR suite for established businesses.',
+            'monthly_price'  => 79,
+            'yearly_price'   => 790,   // ~2 months free
+            'employee_limit' => 100,
+            'highlighted'    => true,
+            'badge'          => 'Most Popular',
+            'modules'        => [
+                'employee_management',
+                'accounting',
+                'departments',
+                'leave_management',
+                'payroll',
+                'announcements',
+                'asset_management',
+                'task_management',
+            ],
+        ],
+
+        'enterprise' => [
+            'name'           => 'Enterprise',
+            'description'    => 'Unlimited scale with full visibility and control.',
+            'monthly_price'  => 199,
+            'yearly_price'   => 1990,  // ~2 months free
+            'employee_limit' => null,
+            'highlighted'    => false,
+            'badge'          => null,
+            'modules'        => [
+                'employee_management',
+                'accounting',
+                'departments',
+                'leave_management',
+                'payroll',
+                'announcements',
+                'asset_management',
+                'task_management',
+                'chat',
+                'audit_logs',
+                'real_estate',
+            ],
+        ],
+
+    ],
+
+];

@@ -138,6 +138,38 @@ new class extends Component
         </div>
         @endcan
 
+        {{-- Real Estate --}}
+        @can('real_estate.view')
+        <div>
+            <p class="px-4 mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Real Estate</p>
+            <a href="{{ route('real-estate.properties.index') }}" wire:navigate
+                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('real-estate.properties.*') ? 'bg-white/80 dark:bg-white/10 text-indigo-600 dark:text-indigo-400 font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-white/40 dark:hover:bg-white/5' }}">
+                <span class="material-symbols-outlined text-[20px]">apartment</span>
+                <span class="font-headline text-sm">Properties</span>
+            </a>
+            <a href="{{ route('real-estate.tenants.index') }}" wire:navigate
+                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('real-estate.tenants.*') ? 'bg-white/80 dark:bg-white/10 text-indigo-600 dark:text-indigo-400 font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-white/40 dark:hover:bg-white/5' }}">
+                <span class="material-symbols-outlined text-[20px]">person_pin</span>
+                <span class="font-headline text-sm">Tenants</span>
+            </a>
+            <a href="{{ route('real-estate.leases.index') }}" wire:navigate
+                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('real-estate.leases.*') ? 'bg-white/80 dark:bg-white/10 text-indigo-600 dark:text-indigo-400 font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-white/40 dark:hover:bg-white/5' }}">
+                <span class="material-symbols-outlined text-[20px]">description</span>
+                <span class="font-headline text-sm">Leases</span>
+            </a>
+            <a href="{{ route('real-estate.invoices.index') }}" wire:navigate
+                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('real-estate.invoices.*') ? 'bg-white/80 dark:bg-white/10 text-indigo-600 dark:text-indigo-400 font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-white/40 dark:hover:bg-white/5' }}">
+                <span class="material-symbols-outlined text-[20px]">receipt_long</span>
+                <span class="font-headline text-sm">Rent Invoices</span>
+            </a>
+            <a href="{{ route('real-estate.maintenance.index') }}" wire:navigate
+                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('real-estate.maintenance.*') ? 'bg-white/80 dark:bg-white/10 text-indigo-600 dark:text-indigo-400 font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-indigo-500 hover:bg-white/40 dark:hover:bg-white/5' }}">
+                <span class="material-symbols-outlined text-[20px]">build</span>
+                <span class="font-headline text-sm">Maintenance</span>
+            </a>
+        </div>
+        @endcan
+
         {{-- Payroll --}}
         <div>
             <p class="px-4 mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Payroll</p>            @role('HR Admin|Super Admin')
