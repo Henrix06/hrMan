@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Forms;
 
+use App\Models\Tenant;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -24,21 +25,63 @@ class LoginForm extends Form
     /**
      * Attempt to authenticate the request's credentials.
      *
+     * Scopes the attempt to the current tenant when running on a subdomain,
+     * so users from different organisations cannot log in to each other's sites.
+     *
      * @throws ValidationException
      */
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only(['email', 'password']), $this->remember)) {
-            RateLimiter::hit($this->throttleKey());
+        $tenant = $this->resolvedTenant();
 
-            throw ValidationException::withMessages([
-                'form.email' => trans('auth.failed'),
-            ]);
+        // When on a tenant subdomain, scope the auth attempt to that tenant's users only.
+        if ($tenant) {
+            $credentials = [
+                'email'     => $this->email,
+                'password'  => $this->password,
+                'tenant_id' => $tenant->id,   // Laravel's Eloquent provider uses extra fields as WHERE clauses
+            ];
+
+            if (! Auth::attempt($credentials, $this->remember)) {
+                RateLimiter::hit($this->throttleKey());
+
+                throw ValidationException::withMessages([
+                    'form.email' => trans('auth.failed'),
+                ]);
+            }
+        } else {
+            // Main domain — standard auth (demo accounts, legacy users without tenant)
+            if (! Auth::attempt($this->only(['email', 'password']), $this->remember)) {
+                RateLimiter::hit($this->throttleKey());
+
+                throw ValidationException::withMessages([
+                    'form.email' => trans('auth.failed'),
+                ]);
+            }
         }
 
         RateLimiter::clear($this->throttleKey());
+    }
+
+    /**
+     * Return the tenant bound to the current request, if any.
+     * Returns null if no tenant was resolved by ResolveTenant middleware.
+     */
+    private function resolvedTenant(): ?Tenant
+    {
+        // Check if the middleware explicitly bound a Tenant instance.
+        // We cannot use app(Tenant::class) directly because Laravel's container
+        // will auto-instantiate an empty Tenant model if nothing is bound.
+        if (! app()->bound(Tenant::class)) {
+            return null;
+        }
+
+        $tenant = app(Tenant::class);
+
+        // Extra guard: only return it if it's a persisted record
+        return ($tenant instanceof Tenant && $tenant->exists) ? $tenant : null;
     }
 
     /**
@@ -67,6 +110,6 @@ class LoginForm extends Form
      */
     protected function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->email).'|'.request()->ip());
+        return Str::transliterate(Str::lower($this->email) . '|' . request()->ip());
     }
 }

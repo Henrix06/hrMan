@@ -81,7 +81,8 @@
             @auth
                 <a href="{{ route('dashboard') }}" class="text-sm font-medium text-slate-600 hover:text-primary transition-colors">Dashboard</a>
             @else
-                <a href="{{ route('login') }}" class="bg-primary text-white text-sm font-semibold px-5 py-2 rounded-lg hover:bg-primary-dim transition-colors shadow-sm shadow-primary/20">Sign In</a>
+                <a href="{{ route('login') }}" class="text-sm font-medium text-slate-600 hover:text-primary transition-colors">Sign in</a>
+                <a href="{{ route('signup') }}" class="bg-primary text-white text-sm font-semibold px-5 py-2 rounded-lg hover:bg-primary-dim transition-colors shadow-sm shadow-primary/20">Get started</a>
             @endauth
         @endif
     </div>
@@ -109,10 +110,10 @@
     </p>
 
     {{-- Email CTA --}}
-    <form class="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto mb-16">
+    <form class="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto mb-16" onsubmit="event.preventDefault(); window.location='{{ route('signup') }}?email='+encodeURIComponent(this.querySelector('input').value)">
         <div class="relative flex-1 w-full">
             <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">mail</span>
-            <input type="email" placeholder="Your email address"
+            <input type="email" placeholder="Your work email"
                 class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 shadow-sm"/>
         </div>
         @auth
@@ -120,9 +121,9 @@
             Go to Dashboard
         </a>
         @else
-        <a href="{{ route('login') }}" class="bg-primary text-white text-sm font-semibold px-6 py-3 rounded-xl hover:bg-primary-dim transition-colors whitespace-nowrap shadow-sm shadow-primary/20">
-            Sign In
-        </a>
+        <button type="submit" class="bg-primary text-white text-sm font-semibold px-6 py-3 rounded-xl hover:bg-primary-dim transition-colors whitespace-nowrap shadow-sm shadow-primary/20">
+            Get started free
+        </button>
         @endauth
     </form>
 
@@ -379,6 +380,95 @@
 </section>
 
 {{-- ═══════════════════════════════════════════════════════
+     PRICING
+════════════════════════════════════════════════════════ --}}
+@php
+    $plans   = config('pricing.plans', []);
+    $modules = config('pricing.modules', []);
+@endphp
+<section id="pricing" class="py-24 px-6 md:px-12 bg-white border-t border-slate-100">
+    <div class="max-w-6xl mx-auto">
+
+        <div class="text-center mb-14">
+            <span class="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-semibold px-3 py-1.5 rounded-full border border-primary/20 mb-5">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                Simple, transparent pricing
+            </span>
+            <h2 class="font-headline font-black text-4xl md:text-5xl text-slate-900 leading-tight mb-4">
+                Pay for what your team <span class="text-primary italic">actually needs</span>
+            </h2>
+            <p class="text-slate-500 max-w-lg mx-auto text-base">
+                Start free, scale as you grow. Every plan includes core HR tools.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+            @foreach($plans as $key => $plan)
+            @php $highlighted = $plan['highlighted']; @endphp
+            <div class="relative flex flex-col rounded-3xl border transition-all duration-200
+                {{ $highlighted ? 'bg-primary border-primary shadow-2xl shadow-primary/20 text-white scale-[1.02]' : 'bg-white border-slate-200 hover:border-primary/40 hover:shadow-lg' }}">
+
+                @if($plan['badge'])
+                <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                    <span class="bg-amber-400 text-amber-900 text-[11px] font-bold px-3 py-1 rounded-full shadow-sm whitespace-nowrap">{{ $plan['badge'] }}</span>
+                </div>
+                @endif
+
+                <div class="p-7 flex flex-col flex-1">
+                    <h3 class="font-headline font-bold text-xl mb-1 {{ $highlighted ? 'text-white' : 'text-slate-900' }}">{{ $plan['name'] }}</h3>
+                    <p class="text-sm mb-5 {{ $highlighted ? 'text-white/70' : 'text-slate-500' }}">{{ $plan['description'] }}</p>
+
+                    <div class="font-headline font-black text-4xl mb-1 {{ $highlighted ? 'text-white' : 'text-slate-900' }}">
+                        {{ $plan['monthly_price'] === 0 ? 'Free' : '$'.$plan['monthly_price'].'/mo' }}
+                    </div>
+                    @if($plan['monthly_price'] > 0)
+                    <p class="text-xs mb-5 {{ $highlighted ? 'text-white/60' : 'text-slate-400' }}">or ${{ $plan['yearly_price'] }}/yr — save 2 months</p>
+                    @else
+                    <p class="text-xs mb-5 {{ $highlighted ? 'text-white/60' : 'text-slate-400' }}">forever free</p>
+                    @endif
+
+                    {{-- Employee limit --}}
+                    <div class="flex items-center gap-2 mb-5 pb-5 border-b {{ $highlighted ? 'border-white/20' : 'border-slate-100' }}">
+                        <span class="material-symbols-outlined text-[18px] {{ $highlighted ? 'text-white/80' : 'text-primary' }}">groups</span>
+                        <span class="text-sm {{ $highlighted ? 'text-white/90' : 'text-slate-700' }}">
+                            {{ $plan['employee_limit'] ? 'Up to '.$plan['employee_limit'].' employees' : 'Unlimited employees' }}
+                        </span>
+                    </div>
+
+                    {{-- Modules --}}
+                    <ul class="space-y-2 flex-1 mb-7">
+                        @foreach($modules as $moduleKey => $moduleLabel)
+                        @php $included = in_array($moduleKey, $plan['modules']); @endphp
+                        <li class="flex items-center gap-2 text-sm">
+                            @if($included)
+                                <span class="material-symbols-outlined text-[16px] flex-shrink-0 {{ $highlighted ? 'text-white' : 'text-primary' }}" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check_circle</span>
+                                <span class="{{ $highlighted ? 'text-white/90' : 'text-slate-700' }}">{{ $moduleLabel }}</span>
+                            @else
+                                <span class="material-symbols-outlined text-[16px] flex-shrink-0 {{ $highlighted ? 'text-white/25' : 'text-slate-200' }}">remove</span>
+                                <span class="{{ $highlighted ? 'text-white/25' : 'text-slate-300' }}">{{ $moduleLabel }}</span>
+                            @endif
+                        </li>
+                        @endforeach
+                    </ul>
+
+                    <a href="{{ route('signup', ['plan' => $key]) }}"
+                        class="block text-center py-3 rounded-2xl text-sm font-semibold transition-all duration-200
+                        {{ $highlighted ? 'bg-white text-primary hover:bg-slate-50' : 'bg-primary text-white hover:bg-primary-dim' }}">
+                        {{ $plan['monthly_price'] === 0 ? 'Get started free' : 'Start '.$plan['name'] }}
+                    </a>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        <p class="text-center text-sm text-slate-400">
+            All paid plans include a <strong class="text-slate-600">14-day free trial</strong>. No credit card required to start.
+            <a href="{{ route('pricing') }}" class="text-primary hover:underline ml-1">See full comparison →</a>
+        </p>
+    </div>
+</section>
+
+{{-- ═══════════════════════════════════════════════════════
      CTA
 ════════════════════════════════════════════════════════ --}}
 <section id="workflow" class="py-20 px-6">
@@ -392,7 +482,8 @@
                 @auth
                 <a href="{{ route('dashboard') }}" class="bg-white text-primary font-bold px-8 py-3.5 rounded-xl hover:bg-slate-50 transition-colors text-sm shadow-sm">Go to Dashboard</a>
                 @else
-                <a href="{{ route('login') }}" class="bg-white text-primary font-bold px-8 py-3.5 rounded-xl hover:bg-slate-50 transition-colors text-sm shadow-sm">Sign In</a>
+                <a href="{{ route('signup') }}" class="bg-white text-primary font-bold px-8 py-3.5 rounded-xl hover:bg-slate-50 transition-colors text-sm shadow-sm">Get started free</a>
+                <a href="{{ route('login') }}" class="bg-white/10 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-white/20 transition-colors text-sm border border-white/20">Sign in</a>
                 @endauth
             </div>
         </div>

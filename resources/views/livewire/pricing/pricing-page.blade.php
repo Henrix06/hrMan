@@ -129,7 +129,7 @@
                     </ul>
 
                     {{-- CTA --}}
-                    <a href="{{ route('register') }}"
+                    <a href="{{ route('signup', ['plan' => $key, 'billing' => $billing]) }}"
                         class="block text-center py-3 rounded-2xl text-sm font-semibold transition-all duration-200
                         {{ $isHighlighted
                             ? 'bg-white text-primary hover:bg-slate-50'

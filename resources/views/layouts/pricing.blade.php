@@ -58,7 +58,7 @@
             </a>
             <div class="flex items-center gap-4">
                 <a href="{{ route('login') }}" class="text-sm text-slate-600 hover:text-primary transition-colors">Sign in</a>
-                <a href="{{ route('register') }}" class="text-sm bg-primary text-white px-4 py-2 rounded-xl font-medium hover:bg-primary-dim transition-colors">
+                <a href="{{ route('signup') }}" class="text-sm bg-primary text-white px-4 py-2 rounded-xl font-medium hover:bg-primary-dim transition-colors">
                     Get started
                 </a>
             </div>

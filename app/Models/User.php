@@ -24,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'tenant_id',
         'employee_id',
         'manager_id',
         'hire_date',
@@ -58,6 +59,14 @@ class User extends Authenticatable
             'hire_date' => 'date',
             'base_salary' => 'decimal:2',
         ];
+    }
+
+    /**
+     * Get the tenant this user belongs to.
+     */
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
     }
 
     /**

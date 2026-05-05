@@ -11,12 +11,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Resolve the tenant from the subdomain on every web request
+        $middleware->web(append: [
+            \App\Http\Middleware\ResolveTenant::class,
+        ]);
+
         $middleware->alias([
             'role'              => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission'        => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission'=> \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'module'            => \App\Http\Middleware\ModuleActiveMiddleware::class,
             'feature'           => \App\Http\Middleware\FeatureFlagMiddleware::class,
+            'tenant'            => \App\Http\Middleware\ResolveTenant::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

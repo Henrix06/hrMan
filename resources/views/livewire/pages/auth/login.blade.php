@@ -20,8 +20,25 @@ new #[Layout('layouts.guest')] class extends Component
 
 <div class="space-y-7">
     <div>
+        @if(isset($currentTenant))
+        <div class="flex items-center gap-2 mb-4">
+            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-[16px]">business</span>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 leading-none">Signing in to</p>
+                <p class="text-sm font-semibold text-slate-800 leading-tight">{{ $currentTenant->name }}</p>
+            </div>
+        </div>
+        @endif
         <h2 class="font-headline font-black text-3xl text-slate-900 mb-1.5">Welcome back</h2>
-        <p class="text-slate-400 text-sm">Sign in to your uMsizi account.</p>
+        <p class="text-slate-400 text-sm">
+            @isset($currentTenant)
+                Sign in to your {{ $currentTenant->name }} workspace.
+            @else
+                Sign in to your uMsizi account.
+            @endisset
+        </p>
     </div>
 
     @if (session('status'))
@@ -49,9 +66,17 @@ new #[Layout('layouts.guest')] class extends Component
                 </a>
                 @endif
             </div>
-            <input wire:model="form.password" id="password" type="password" name="password"
-                placeholder="••••••••" required autocomplete="current-password"
-                class="auth-input"/>
+            <div class="relative" x-data="{ show: false }">
+                <input wire:model="form.password" id="password" name="password"
+                    :type="show ? 'text' : 'password'"
+                    placeholder="••••••••" required autocomplete="current-password"
+                    class="auth-input pr-12"/>
+                <button type="button" @click="show = !show"
+                    class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
+                    :aria-label="show ? 'Hide password' : 'Show password'">
+                    <span class="material-symbols-outlined text-[20px]" x-text="show ? 'visibility_off' : 'visibility'"></span>
+                </button>
+            </div>
             <x-input-error :messages="$errors->get('form.password')" class="auth-error"/>
         </div>
 
@@ -75,7 +100,7 @@ new #[Layout('layouts.guest')] class extends Component
     </form>
 
     @php $demoAccounts = collect(config('demo_accounts', [])); @endphp
-    @if ($demoAccounts->isNotEmpty())
+    @if ($demoAccounts->isNotEmpty() && ! isset($currentTenant))
     <div class="rounded-2xl border border-slate-100 bg-slate-50 p-5 space-y-3">
         <div class="flex items-center justify-between">
             <div>

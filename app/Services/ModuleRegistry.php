@@ -19,7 +19,7 @@ class ModuleRegistry implements ModuleRegistryInterface
             return true;
         }
 
-        $tenantId ??= 1;
+        $tenantId ??= $this->currentTenantId();
         $cacheKey  = "module_active:{$tenantId}:{$moduleKey}";
 
         try {
@@ -61,7 +61,8 @@ class ModuleRegistry implements ModuleRegistryInterface
             ->get()
             ->keyBy('module_key');
 
-        $plan        = config('app.plan', 'free');
+        // Prefer the tenant's own plan; fall back to APP_PLAN for legacy/demo
+        $plan        = \App\Models\Tenant::find($tenantId)?->plan ?? config('app.plan', 'free');
         $planModules = config("pricing.plans.{$plan}.modules", []);
 
         return collect($allModules)->map(function (string $key) use ($dbRows, $planModules) {
@@ -97,5 +98,29 @@ class ModuleRegistry implements ModuleRegistryInterface
         if (! in_array($moduleKey, $validKeys, true)) {
             throw new InvalidModuleKeyException($moduleKey);
         }
+    }
+
+    /**
+     * Resolve the current tenant ID from the container binding set by ResolveTenant middleware,
+     * falling back to the authenticated user's tenant, then to 1 for legacy/demo data.
+     */
+    private function currentTenantId(): int
+    {
+        try {
+            $tenant = app(\App\Models\Tenant::class);
+            if ($tenant instanceof \App\Models\Tenant) {
+                return $tenant->id;
+            }
+        } catch (\Throwable) {
+            // not bound
+        }
+
+        // Fall back to the authenticated user's tenant
+        $user = auth()->user();
+        if ($user && $user->tenant_id) {
+            return $user->tenant_id;
+        }
+
+        return 1; // legacy / demo fallback
     }
 }

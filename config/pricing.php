@@ -34,10 +34,10 @@ return [
 
         'free' => [
             'name'           => 'Free',
-            'description'    => 'Perfect for small teams getting started.',
+            'description'    => 'For solo admins and micro-teams up to 5 people.',
             'monthly_price'  => 0,
             'yearly_price'   => 0,
-            'employee_limit' => 10,
+            'employee_limit' => 5,
             'highlighted'    => false,
             'badge'          => null,
             'modules'        => [

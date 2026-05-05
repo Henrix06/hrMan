@@ -139,7 +139,7 @@ new class extends Component
         @endcan
 
         {{-- Real Estate --}}
-        @can('real_estate.view')
+        @if(auth()->user()->hasPermissionTo('real_estate.view'))
         <div>
             <p class="px-4 mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Real Estate</p>
             <a href="{{ route('real-estate.properties.index') }}" wire:navigate
@@ -168,7 +168,7 @@ new class extends Component
                 <span class="font-headline text-sm">Maintenance</span>
             </a>
         </div>
-        @endcan
+        @endif
 
         {{-- Payroll --}}
         <div>
