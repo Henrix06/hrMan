@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use App\Services\Payment\DummyPaymentGateway;
 use App\Services\TenantProvisioner;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -61,6 +62,10 @@ class Signup extends Component
     {
         $plan = $this->planConfig;
 
+        if ($plan['monthly_price'] === null && $plan['yearly_price'] === null) {
+            return 'Contact us';
+        }
+
         if ($plan['monthly_price'] === 0) {
             return 'Free';
         }
@@ -75,7 +80,7 @@ class Signup extends Component
     #[Computed]
     public function isFree(): bool
     {
-        return ($this->planConfig['monthly_price'] ?? 0) === 0;
+        return ($this->planConfig['monthly_price'] ?? 0) === 0 || ($this->planConfig['monthly_price'] === null && $this->planConfig['yearly_price'] === null);
     }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -87,7 +92,7 @@ class Signup extends Component
             $this->plan = 'free';
         }
 
-        // Free plan skips payment step
+        // Free plan (or null-price enterprise) skips payment step
         if ($this->isFree) {
             $this->billing = 'monthly';
         }
@@ -161,19 +166,41 @@ class Signup extends Component
             ]);
         }
 
-        $this->runProvisioning();
+        // Process payment with dummy gateway
+        $paymentGateway = app(DummyPaymentGateway::class);
+        $planConfig = $this->planConfig;
+        $amount = $this->billing === 'yearly' ? $planConfig['yearly_price'] : $planConfig['monthly_price'];
+
+        $paymentResult = $paymentGateway->processPayment([
+            'amount' => $amount,
+            'currency' => 'USD',
+            'payment_method' => $this->payment_method,
+            'card_details' => $this->payment_method === 'card' ? [
+                'last4' => substr(preg_replace('/\s+/', '', $this->card_number), -4),
+                'expiry' => $this->card_expiry,
+                'cardholder' => $this->card_name,
+            ] : null,
+            'eft_reference' => $this->payment_method === 'eft' ? $this->eft_reference : null,
+        ]);
+
+        if (!$paymentResult['success']) {
+            $this->error_message = $paymentResult['message'] ?? 'Payment failed. Please try again.';
+            return;
+        }
+
+        $this->runProvisioning($paymentResult);
     }
 
     // ── Provisioning ──────────────────────────────────────────────────────────
 
-    private function runProvisioning(): void
+    private function runProvisioning(?array $paymentResult = null): void
     {
         $this->step        = 3;
         $this->provisioning = true;
         $this->error_message = '';
 
         try {
-            $paymentMethod = $this->buildPaymentMethodPayload();
+            $paymentMethod = $this->buildPaymentMethodPayload($paymentResult);
 
             $provisioner = app(TenantProvisioner::class);
             $result      = $provisioner->provision([
@@ -202,27 +229,38 @@ class Signup extends Component
         }
     }
 
-    private function buildPaymentMethodPayload(): array
+    private function buildPaymentMethodPayload(?array $paymentResult = null): array
     {
         if ($this->isFree) {
             return ['type' => 'none'];
         }
 
+        $payload = [];
+
         if ($this->payment_method === 'card') {
             // Store only the last 4 digits — never the full number
             $last4 = substr(preg_replace('/\s+/', '', $this->card_number), -4);
-            return [
+            $payload = [
                 'type'       => 'card',
                 'last4'      => $last4,
                 'expiry'     => $this->card_expiry,
                 'cardholder' => $this->card_name,
             ];
+        } else {
+            $payload = [
+                'type'      => 'eft',
+                'reference' => $this->eft_reference,
+            ];
         }
 
-        return [
-            'type'      => 'eft',
-            'reference' => $this->eft_reference,
-        ];
+        // Add dummy payment gateway result if available
+        if ($paymentResult) {
+            $payload['transaction_id'] = $paymentResult['transaction_id'] ?? null;
+            $payload['gateway'] = 'dummy';
+            $payload['processed_at'] = $paymentResult['processed_at'] ?? null;
+        }
+
+        return $payload;
     }
 
     // ── Render ────────────────────────────────────────────────────────────────

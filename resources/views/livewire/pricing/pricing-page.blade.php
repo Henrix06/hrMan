@@ -26,7 +26,7 @@
                 :class="billing === 'yearly' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
             >
                 Yearly
-                <span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full">2 months free</span>
+                <span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full">20% off</span>
             </button>
         </div>
     </section>
@@ -74,18 +74,20 @@
                         <div class="font-headline font-black text-4xl {{ $isHighlighted ? 'text-white' : 'text-slate-900' }}">
                             {{ $price }}
                         </div>
-                        @if($billing === 'yearly' && $plan['monthly_price'] > 0)
-                        <div class="text-xs mt-1 {{ $isHighlighted ? 'text-white/60' : 'text-slate-400' }}">
-                            billed ${{ $plan['yearly_price'] }}/year
-                        </div>
-                        @elseif($plan['monthly_price'] > 0)
-                        <div class="text-xs mt-1 {{ $isHighlighted ? 'text-white/60' : 'text-slate-400' }}">
-                            per month
-                        </div>
-                        @else
-                        <div class="text-xs mt-1 {{ $isHighlighted ? 'text-white/60' : 'text-slate-400' }}">
-                            forever
-                        </div>
+                        @if($plan['monthly_price'] !== null && $plan['yearly_price'] !== null)
+                            @if($billing === 'yearly' && $plan['monthly_price'] > 0)
+                            <div class="text-xs mt-1 {{ $isHighlighted ? 'text-white/60' : 'text-slate-400' }}">
+                                billed ${{ $plan['yearly_price'] }}/year
+                            </div>
+                            @elseif($plan['monthly_price'] > 0)
+                            <div class="text-xs mt-1 {{ $isHighlighted ? 'text-white/60' : 'text-slate-400' }}">
+                                per month
+                            </div>
+                            @else
+                            <div class="text-xs mt-1 {{ $isHighlighted ? 'text-white/60' : 'text-slate-400' }}">
+                                forever
+                            </div>
+                            @endif
                         @endif
                     </div>
 
@@ -129,6 +131,7 @@
                     </ul>
 
                     {{-- CTA --}}
+                    @if($plan['monthly_price'] !== null && $plan['yearly_price'] !== null)
                     <a href="{{ route('signup', ['plan' => $key, 'billing' => $billing]) }}"
                         class="block text-center py-3 rounded-2xl text-sm font-semibold transition-all duration-200
                         {{ $isHighlighted
@@ -140,6 +143,15 @@
                             Start {{ $plan['name'] }}
                         @endif
                     </a>
+                    @else
+                    <a href="#"
+                        class="block text-center py-3 rounded-2xl text-sm font-semibold transition-all duration-200
+                        {{ $isHighlighted
+                            ? 'bg-white text-primary hover:bg-slate-50'
+                            : 'bg-primary text-white hover:bg-primary-dim' }}">
+                        Contact us
+                    </a>
+                    @endif
 
                 </div>
             </div>
@@ -196,7 +208,7 @@
                         @foreach($this->plans as $plan)
                         <td class="px-4 py-4 text-center">
                             <div class="font-headline font-bold text-slate-900">{{ $this->price($plan) }}</div>
-                            @if($billing === 'yearly' && $plan['monthly_price'] > 0)
+                            @if($plan['monthly_price'] !== null && $plan['yearly_price'] !== null && $billing === 'yearly' && $plan['monthly_price'] > 0)
                             <div class="text-[11px] text-slate-400">${{ $plan['yearly_price'] }}/yr</div>
                             @endif
                         </td>

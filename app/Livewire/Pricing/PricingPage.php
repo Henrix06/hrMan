@@ -25,6 +25,10 @@ class PricingPage extends Component
 
     public function price(array $plan): string
     {
+        if ($plan['monthly_price'] === null && $plan['yearly_price'] === null) {
+            return 'Contact us';
+        }
+
         $amount = $this->billing === 'yearly' ? $plan['yearly_price'] : $plan['monthly_price'];
 
         if ($amount === 0) {
@@ -36,12 +40,13 @@ class PricingPage extends Component
 
     public function yearlySavings(array $plan): ?string
     {
+        if ($plan['monthly_price'] === null || $plan['yearly_price'] === null) return null;
         if ($plan['monthly_price'] === 0) return null;
 
         $annualIfMonthly = $plan['monthly_price'] * 12;
         $savings = $annualIfMonthly - $plan['yearly_price'];
 
-        return $savings > 0 ? 'Save $' . $savings . '/yr' : null;
+        return $savings > 0 ? 'Save $' . $savings . '/yr (20% off)' : null;
     }
 
     public function render()

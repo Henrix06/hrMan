@@ -19,6 +19,7 @@ return [
         'audit_logs'          => 'Audit Logs',
         'departments'         => 'Department Management',
         'real_estate'         => 'Real Estate Management',
+        'real_estate_accountant' => 'Real Estate Accountant',
     ],
 
     /*
@@ -50,8 +51,8 @@ return [
         'starter' => [
             'name'           => 'Starter',
             'description'    => 'For growing teams that need HR essentials.',
-            'monthly_price'  => 29,
-            'yearly_price'   => 290,   // ~2 months free
+            'monthly_price'  => 15,
+            'yearly_price'   => 144,   // 20% discount (15 × 12 × 0.8)
             'employee_limit' => 25,
             'highlighted'    => false,
             'badge'          => null,
@@ -68,8 +69,8 @@ return [
         'professional' => [
             'name'           => 'Professional',
             'description'    => 'Full HR suite for established businesses.',
-            'monthly_price'  => 79,
-            'yearly_price'   => 790,   // ~2 months free
+            'monthly_price'  => 20,
+            'yearly_price'   => 192,   // 20% discount (20 × 12 × 0.8)
             'employee_limit' => 100,
             'highlighted'    => true,
             'badge'          => 'Most Popular',
@@ -87,9 +88,9 @@ return [
 
         'enterprise' => [
             'name'           => 'Enterprise',
-            'description'    => 'Unlimited scale with full visibility and control.',
-            'monthly_price'  => 199,
-            'yearly_price'   => 1990,  // ~2 months free
+            'description'    => 'Unlimited scale with full visibility and control. Contact us for pricing.',
+            'monthly_price'  => null,
+            'yearly_price'   => null,
             'employee_limit' => null,
             'highlighted'    => false,
             'badge'          => null,
@@ -105,6 +106,7 @@ return [
                 'chat',
                 'audit_logs',
                 'real_estate',
+                'real_estate_accountant',
             ],
         ],
 

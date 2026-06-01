@@ -2,12 +2,14 @@
 
 namespace App\Services;
 
+use App\Mail\WelcomeEmail;
 use App\Models\Tenant;
 use App\Models\TenantModule;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
@@ -69,6 +71,9 @@ class TenantProvisioner
 
             // 5. Fire the Registered event so email verification mail is sent
             event(new Registered($user));
+
+            // 6. Send welcome email
+            Mail::to($user->email)->send(new WelcomeEmail($user, $tenant));
 
             return compact('tenant', 'user');
         });

@@ -38,6 +38,11 @@ class Property extends Model
         });
     }
 
+    public function units(): HasMany
+    {
+        return $this->hasMany(PropertyUnit::class);
+    }
+
     public function leases(): HasMany
     {
         return $this->hasMany(Lease::class);
@@ -46,6 +51,11 @@ class Property extends Model
     public function maintenanceRequests(): HasMany
     {
         return $this->hasMany(MaintenanceRequest::class);
+    }
+
+    public function conveyanceDocuments(): HasMany
+    {
+        return $this->hasMany(ConveyanceDocument::class);
     }
 
     public function creator(): BelongsTo
