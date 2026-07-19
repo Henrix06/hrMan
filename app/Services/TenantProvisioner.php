@@ -16,9 +16,62 @@ use Spatie\Permission\Models\Role;
 class TenantProvisioner
 {
     /**
-     * Provision a brand-new tenant with a super-admin user.
+     * Provision a brand-new tenant with a super-admin user, or join an existing one.
      */
     public function provision(array $data): array
+    {
+        // If organisation_id is provided, join the existing tenant
+        if (!empty($data['organisation_id'])) {
+            return $this->joinExistingTenant($data);
+        }
+
+        // Otherwise, create a new tenant
+        return $this->createNewTenant($data);
+    }
+
+    private function joinExistingTenant(array $data): array
+    {
+        return DB::transaction(function () use ($data) {
+            $tenant = Tenant::findOrFail($data['organisation_id']);
+
+            // Get the next employee ID for this tenant
+            $lastEmployee = User::where('tenant_id', $tenant->id)
+                ->orderByDesc('employee_id')
+                ->value('employee_id');
+
+            $nextNumber = 1;
+            if ($lastEmployee && preg_match('/EMP(\d+)/', $lastEmployee, $matches)) {
+                $nextNumber = (int) $matches[1] + 1;
+            }
+            $employeeId = 'EMP' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+
+            // Create the user assigned to the existing tenant
+            $user = User::create([
+                'name'        => $data['name'],
+                'email'       => $data['email'],
+                'password'    => Hash::make($data['password']),
+                'tenant_id'   => $tenant->id,
+                'employee_id' => $employeeId,
+                'status'      => 'active',
+                'hire_date'   => now()->toDateString(),
+                'position'    => 'Employee',
+            ]);
+
+            // Assign the Employee role
+            $role = Role::firstOrCreate(['name' => 'Employee', 'guard_name' => 'web']);
+            $user->assignRole($role);
+
+            // Fire the Registered event so email verification mail is sent
+            event(new Registered($user));
+
+            // Send welcome email
+            Mail::to($user->email)->send(new WelcomeEmail($user, $tenant));
+
+            return compact('tenant', 'user');
+        });
+    }
+
+    private function createNewTenant(array $data): array
     {
         return DB::transaction(function () use ($data) {
             // Auto-generate a subdomain slug from company name

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -13,8 +14,23 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $accounts = collect(config('demo_accounts'));
+        $config = config('demo_accounts');
+        $defaultTenantId = $config['default_tenant_id'] ?? 1;
+        $accounts = collect($config['accounts'] ?? []);
         $seededUsers = [];
+
+        // Ensure the default tenant exists
+        Tenant::updateOrCreate(
+            ['id' => $defaultTenantId],
+            [
+                'name' => 'Demo Organisation',
+                'subdomain' => 'demo',
+                'plan' => 'free',
+                'billing_cycle' => 'monthly',
+                'status' => 'active',
+                'trial_ends_at' => now()->addDays(365),
+            ]
+        );
 
         foreach ($accounts as $account) {
             $managerId = null;
@@ -35,6 +51,7 @@ class UserSeeder extends Seeder
                     'hire_date' => $this->resolveHireDate($account['hire_offset'] ?? []),
                     'base_salary' => $account['base_salary'],
                     'manager_id' => $managerId,
+                    'tenant_id' => $defaultTenantId,
                     'email_verified_at' => now(),
                 ]
             );

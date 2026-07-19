@@ -146,9 +146,20 @@
             <div>
                 <label class="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Company / Organisation Name</label>
                 <input wire:model="company_name" type="text"
-                    placeholder="Acme Corp" required
-                    class="auth-input @error('company_name') error @enderror"/>
+                    placeholder="Acme Corp"
+                    @if(!$organisation_id) required @endif
+                    class="auth-input @error('company_name') error @enderror"
+                    @if($organisation_id) disabled @endif/>
                 @error('company_name') <p class="auth-error">{{ $message }}</p> @enderror
+            </div>
+
+            <div class="mt-4">
+                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Organisation ID (Optional)</label>
+                <input wire:model="organisation_id" type="text"
+                    placeholder="Enter ID to join existing organisation"
+                    class="auth-input @error('organisation_id') error @enderror"/>
+                @error('organisation_id') <p class="auth-error">{{ $message }}</p> @enderror
+                <p class="text-xs text-slate-400 mt-1">Leave blank to create a new organisation</p>
             </div>
         </div>
 
@@ -338,10 +349,28 @@
             </div>
         </div>
         <div>
+            @if($organisation_id)
+            <h2 class="font-headline font-black text-2xl text-slate-900 mb-2">Joining organisation…</h2>
+            <p class="text-slate-400 text-sm">Setting up your account and assigning you to the organisation.</p>
+            @else
             <h2 class="font-headline font-black text-2xl text-slate-900 mb-2">Setting up your workspace…</h2>
             <p class="text-slate-400 text-sm">Creating your subdomain, configuring modules, and provisioning your account.</p>
+            @endif
         </div>
         <div class="w-full max-w-xs space-y-2 text-left">
+            @if($organisation_id)
+            @foreach(['Verifying organisation', 'Creating your account', 'Assigning role', 'Finalising'] as $i => $step_label)
+            <div class="flex items-center gap-3 text-sm text-slate-500">
+                <div class="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center">
+                    <svg class="animate-spin h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                    </svg>
+                </div>
+                {{ $step_label }}
+            </div>
+            @endforeach
+            @else
             @foreach(['Creating tenant record', 'Provisioning super admin', 'Enabling plan modules', 'Finalising workspace'] as $i => $step_label)
             <div class="flex items-center gap-3 text-sm text-slate-500">
                 <div class="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center">
@@ -353,6 +382,7 @@
                 {{ $step_label }}
             </div>
             @endforeach
+            @endif
         </div>
     </div>
 
@@ -365,34 +395,24 @@
 
         <div>
             <h2 class="font-headline font-black text-3xl text-slate-900 mb-2">You're all set!</h2>
+            @if($organisation_id)
             <p class="text-slate-500 text-sm max-w-sm mx-auto">
-                Your <strong>{{ $planName }}</strong> workspace has been created. You're logged in as the super admin.
+                You've joined the organisation. Redirecting to your dashboard...
             </p>
+            @else
+            <p class="text-slate-500 text-sm max-w-sm mx-auto">
+                Your <strong>{{ $planName }}</strong> workspace has been created. Redirecting to your dashboard...
+            </p>
+            @endif
         </div>
 
-        {{-- What's next --}}
-        <div class="w-full space-y-2 text-left">
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">What's next</p>
-            @foreach([
-                ['person_add', 'Invite your team members', 'Add employees and assign roles'],
-                ['settings', 'Configure your modules', 'Enable or disable features for your plan'],
-                ['mail', 'Verify your email', 'Check your inbox to confirm your address'],
-            ] as [$icon, $title, $desc])
-            <div class="flex items-start gap-3 bg-slate-50 rounded-xl p-3 border border-slate-100">
-                <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">{{ $icon }}</span>
-                <div>
-                    <p class="text-sm font-semibold text-slate-800">{{ $title }}</p>
-                    <p class="text-xs text-slate-400">{{ $desc }}</p>
-                </div>
-            </div>
-            @endforeach
+        <div class="flex items-center gap-2 text-sm text-slate-400">
+            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+            </svg>
+            Taking you to your workspace...
         </div>
-
-        <a href="{{ route('dashboard') }}"
-            class="w-full h-14 rounded-xl bg-gradient-to-br from-primary to-primary-container text-white font-headline font-bold text-base shadow-lg shadow-primary/20 hover:opacity-90 transition-all flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined text-[20px]">dashboard</span>
-            Go to Dashboard
-        </a>
     </div>
 
     @else

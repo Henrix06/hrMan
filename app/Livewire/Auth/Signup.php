@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use App\Models\Tenant;
 use App\Services\Payment\DummyPaymentGateway;
 use App\Services\TenantProvisioner;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +29,7 @@ class Signup extends Component
     public string $password     = '';
     public string $password_confirmation = '';
     public string $company_name = '';
+    public ?string $organisation_id = '1';
 
     // Step 2: Payment
     public string $payment_method = 'card';
@@ -87,12 +89,26 @@ class Signup extends Component
 
     public function nextToPayment(): void
     {
+        // Validate base fields
         $this->validate([
             'name'         => ['required', 'string', 'max:255'],
             'email'        => ['required', 'email', 'max:255', 'unique:users,email'],
             'password'     => ['required', 'string', 'confirmed', Password::defaults()],
-            'company_name' => ['required', 'string', 'max:255'],
         ]);
+
+        // If joining an existing org, validate organisation_id exists
+        if ($this->organisation_id) {
+            $this->validate([
+                'organisation_id' => ['required', 'string', 'exists:tenants,id'],
+            ]);
+            // Clear company_name since we're joining an existing org
+            $this->company_name = '';
+        } else {
+            // Creating a new org, company_name is required
+            $this->validate([
+                'company_name' => ['required', 'string', 'max:255'],
+            ]);
+        }
 
         if ($this->isFree) {
             $this->runProvisioning();
@@ -159,19 +175,23 @@ class Signup extends Component
 
             $provisioner = app(TenantProvisioner::class);
             $result      = $provisioner->provision([
-                'name'           => $this->name,
-                'email'          => $this->email,
-                'password'       => $this->password,
-                'company_name'   => $this->company_name,
-                'plan'           => $this->plan,
-                'billing_cycle'  => $this->billing,
-                'payment_method' => $paymentMethod,
+                'name'            => $this->name,
+                'email'           => $this->email,
+                'password'        => $this->password,
+                'company_name'    => $this->company_name,
+                'organisation_id' => $this->organisation_id,
+                'plan'            => $this->plan,
+                'billing_cycle'   => $this->billing,
+                'payment_method'  => $paymentMethod,
             ]);
 
             Auth::login($result['user']);
 
             $this->provisioning = false;
             $this->done         = true;
+
+            // Auto-redirect to dashboard after a short delay
+            $this->redirect(route('dashboard'), navigate: true);
 
         } catch (\Throwable $e) {
             $this->provisioning  = false;

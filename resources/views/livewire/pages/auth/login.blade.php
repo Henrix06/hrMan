@@ -99,7 +99,7 @@ new #[Layout('layouts.guest')] class extends Component
         </button>
     </form>
 
-    @php $demoAccounts = collect(config('demo_accounts', [])); @endphp
+    @php $demoAccounts = collect(config('demo_accounts.accounts', [])); @endphp
     @if ($demoAccounts->isNotEmpty() && ! isset($currentTenant))
     <div class="rounded-2xl border border-slate-100 bg-slate-50 p-5 space-y-3">
         <div class="flex items-center justify-between">
