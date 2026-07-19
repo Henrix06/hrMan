@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class TransportClaim extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
         'reference', 'user_id', 'account_id', 'travel_date', 'origin',
         'destination', 'purpose', 'transport_mode', 'distance_km',
         'claim_amount', 'approved_amount', 'notes', 'receipt_path',
-        'status', 'reviewed_by', 'reviewed_at', 'review_notes',
+        'status', 'reviewed_by', 'reviewed_at', 'review_notes', 'tenant_id',
     ];
 
     protected function casts(): array

@@ -6,12 +6,12 @@
         </div>
     @endif
 
-    <div class="mb-8">
-        <h2 class="text-3xl font-extrabold text-slate-900 font-headline">Apply for Leave</h2>
+    <div class="mb-6">
+        <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 font-headline">Apply for Leave</h2>
         <p class="text-slate-500 text-sm mt-1">Submit a time-off request for approval</p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
 
         {{-- Form --}}
         <div class="lg:col-span-2">
@@ -146,7 +146,7 @@
                 </div>
             </div>
 
-            <div class="glass-card rounded-[2rem] p-5 bg-gradient-to-br from-indigo-50 to-white">
+            <div class="glass-card rounded-[2rem] p-5 bg-gradient-to-br from-primary/5 to-white">
                 <div class="flex items-start gap-3">
                     <span class="material-symbols-outlined text-primary text-sm mt-0.5">info</span>
                     <div class="text-xs text-slate-500 space-y-1">

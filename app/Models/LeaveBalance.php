@@ -2,23 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LeaveBalance extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    use BelongsToTenant;
+
     protected $fillable = [
-        'user_id',
-        'leave_type_id',
-        'days_available',
-        'days_taken',
-        'days_pending',
-        'year',
+        'user_id', 'leave_type_id', 'days_available', 'days_taken', 'days_pending', 'year', 'tenant_id',
     ];
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,10 +10,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Asset extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
         'asset_tag', 'name', 'category', 'brand', 'model',
         'serial_number', 'purchase_date', 'purchase_cost',
-        'condition', 'status', 'notes', 'created_by',
+        'condition', 'status', 'notes', 'created_by', 'tenant_id',
     ];
 
     protected function casts(): array

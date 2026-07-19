@@ -2,18 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class AccountTransaction extends Model
 {
+    use BelongsToTenant;
+
     public $timestamps = false;
 
     protected $fillable = [
         'account_id', 'created_by', 'reference', 'type', 'amount',
         'balance_after', 'category', 'description',
-        'transactable_type', 'transactable_id', 'integrity_hash',
+        'transactable_type', 'transactable_id', 'integrity_hash', 'tenant_id',
     ];
 
     protected function casts(): array

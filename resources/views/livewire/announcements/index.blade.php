@@ -3,13 +3,14 @@
         <div class="mb-6 px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm">{{ session('message') }}</div>
     @endif
 
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-            <h2 class="text-3xl font-extrabold text-slate-900 font-headline">Announcements</h2>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 font-headline">Announcements</h2>
             <p class="text-slate-500 text-sm mt-1">Company-wide communications</p>
         </div>
         @if($canManage)
-        <button wire:click="openCreate" class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-5 py-2.5 rounded-xl font-bold font-headline shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center gap-2">
+        <button wire:click="openCreate"
+            class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-5 py-2.5 rounded-xl font-bold font-headline shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center justify-center gap-2 w-full sm:w-auto">
             <span class="material-symbols-outlined text-sm">add</span> New Announcement
         </button>
         @endif
@@ -59,8 +60,8 @@
     <div class="mt-4">{{ $announcements->links() }}</div>
 
     @if($showModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg mx-4 p-8 max-h-[90vh] overflow-y-auto">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg p-6 md:p-8 max-h-[90vh] overflow-y-auto">
             <h3 class="text-2xl font-bold font-headline text-slate-900 mb-6">{{ $editing ? 'Edit' : 'New' }} Announcement</h3>
             <form wire:submit="save" class="space-y-4">
                 <div>

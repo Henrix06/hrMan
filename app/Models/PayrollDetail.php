@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -9,27 +10,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PayrollDetail extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'user_id',
-        'pay_period',
-        'pay_date',
-        'base_salary',
-        'allowances',
-        'overtime_pay',
-        'bonus',
-        'tax_deduction',
-        'insurance_deduction',
-        'other_deductions',
-        'net_salary',
-        'status',
-        'notes',
+        'user_id', 'pay_period', 'pay_date', 'base_salary', 'allowances', 'overtime_pay',
+        'bonus', 'tax_deduction', 'insurance_deduction', 'other_deductions', 'net_salary',
+        'status', 'notes', 'tenant_id',
     ];
 
     /**

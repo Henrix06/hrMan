@@ -1,97 +1,99 @@
 <div>
-    <!-- Flash Messages -->
     @if (session()->has('message'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        <div class="mb-6 px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">check_circle</span>
             {{ session('message') }}
         </div>
     @endif
-
     @if (session()->has('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div class="mb-6 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">error</span>
             {{ session('error') }}
         </div>
     @endif
 
-    <h2 class="text-2xl font-bold text-gray-800 mb-6">Run Payroll</h2>
+    <div class="mb-6">
+        <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 font-headline">Run Payroll</h2>
+        <p class="text-slate-500 text-sm mt-1">Process payroll for selected employees</p>
+    </div>
 
     <form wire:submit="processPayroll" class="space-y-6">
-        <!-- Pay Period and Date -->
-        <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Payroll Settings</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {{-- Pay Period and Date --}}
+        <div class="glass-card rounded-[2rem] p-6">
+            <h3 class="text-lg font-bold font-headline text-slate-900 mb-4">Payroll Settings</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Pay Period</label>
-                    <input type="month" wire:model="payPeriod" 
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('payPeriod') border-red-500 @enderror">
-                    @error('payPeriod') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Pay Period</label>
+                    <input type="month" wire:model="payPeriod"
+                        class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none @error('payPeriod') border-error @enderror">
+                    @error('payPeriod') <p class="text-error text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Pay Date</label>
-                    <input type="date" wire:model="payDate" 
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('payDate') border-red-500 @enderror">
-                    @error('payDate') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Pay Date</label>
+                    <input type="date" wire:model="payDate"
+                        class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none @error('payDate') border-error @enderror">
+                    @error('payDate') <p class="text-error text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Tax Rate (%)</label>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Tax Rate (%)</label>
                     <input type="number" wire:model="taxRate" min="0" max="100" step="0.1"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('taxRate') border-red-500 @enderror">
-                    @error('taxRate') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none @error('taxRate') border-error @enderror">
+                    @error('taxRate') <p class="text-error text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
         </div>
 
-        <!-- Employee Selection -->
-        <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Select Employees</h3>
-            <div class="space-y-3">
+        {{-- Employee Selection --}}
+        <div class="glass-card rounded-[2rem] p-6">
+            <h3 class="text-lg font-bold font-headline text-slate-900 mb-4">Select Employees</h3>
+            <div class="space-y-2">
                 @foreach($this->employees as $employee)
-                <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                <label class="flex items-center p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition-colors">
                     <input type="checkbox" wire:model="selectedEmployees" value="{{ $employee->id }}"
-                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <div class="ml-3 flex-1">
-                        <div class="font-medium text-gray-900">{{ $employee->name }}</div>
-                        <div class="text-sm text-gray-500">{{ $employee->email }} - {{ $employee->position }}</div>
+                        class="rounded border-slate-300 text-primary focus:ring-primary/20">
+                    <div class="ml-3 flex-1 min-w-0">
+                        <div class="font-bold text-slate-800">{{ $employee->name }}</div>
+                        <div class="text-xs text-slate-400 truncate">{{ $employee->email }} · {{ $employee->position }}</div>
                     </div>
-                    <div class="text-sm text-gray-600">
-                        Base: ${{ number_format($employee->base_salary, 2) }}
+                    <div class="text-sm font-semibold text-slate-600 flex-shrink-0">
+                        ${{ number_format($employee->base_salary, 2) }}
                     </div>
                 </label>
                 @endforeach
             </div>
-            @error('selectedEmployees') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+            @error('selectedEmployees') <p class="text-error text-xs mt-1">{{ $message }}</p> @enderror
         </div>
 
-        <!-- Additional Pay Components -->
-        <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Additional Pay Components (Optional)</h3>
+        {{-- Additional Pay Components --}}
+        @if(count($selectedEmployees) > 0)
+        <div class="glass-card rounded-[2rem] p-6">
+            <h3 class="text-lg font-bold font-headline text-slate-900 mb-4">Additional Pay Components</h3>
             <div class="space-y-4">
                 @foreach($selectedEmployees as $employeeId)
-                @php
-                    $employee = $this->employees->find($employeeId);
-                @endphp
+                @php $employee = $this->employees->find($employeeId); @endphp
                 @if($employee)
-                <div class="border-t pt-4">
-                    <h4 class="font-medium text-gray-800 mb-2">{{ $employee->name }}</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="border-t border-slate-100 pt-4">
+                    <h4 class="font-bold text-slate-800 mb-3">{{ $employee->name }}</h4>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
                         <div>
-                            <label class="block text-sm text-gray-700 mb-1">Allowances</label>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Allowances</label>
                             <input type="number" wire:model="allowances.{{ $employeeId }}" min="0" step="0.01"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none"/>
                         </div>
                         <div>
-                            <label class="block text-sm text-gray-700 mb-1">Overtime Pay</label>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Overtime</label>
                             <input type="number" wire:model="overtimePay.{{ $employeeId }}" min="0" step="0.01"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none"/>
                         </div>
                         <div>
-                            <label class="block text-sm text-gray-700 mb-1">Bonus</label>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Bonus</label>
                             <input type="number" wire:model="bonus.{{ $employeeId }}" min="0" step="0.01"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none"/>
                         </div>
                         <div>
-                            <label class="block text-sm text-gray-700 mb-1">Insurance</label>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Insurance</label>
                             <input type="number" wire:model="insuranceDeduction.{{ $employeeId }}" min="0" step="0.01"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none"/>
                         </div>
                     </div>
                 </div>
@@ -99,10 +101,13 @@
                 @endforeach
             </div>
         </div>
+        @endif
 
-        <!-- Submit -->
+        {{-- Submit --}}
         <div class="flex items-center justify-end">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium">
+            <button type="submit"
+                class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-3 rounded-xl font-bold font-headline shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">payments</span>
                 Process Payroll
             </button>
         </div>

@@ -18,12 +18,12 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#4e45e4',
-                        'primary-dim': '#4135d8',
-                        surface: '#f7f9fb',
-                        'on-surface': '#2c3437',
-                        'on-surface-variant': '#596064',
-                        'outline-variant': '#acb3b7',
+                        primary: '#8B5E3C',
+                        'primary-dim': '#7A4F30',
+                        surface: '#FAF7F4',
+                        'on-surface': '#2C2420',
+                        'on-surface-variant': '#5A534D',
+                        'outline-variant': '#B0AAA4',
                     },
                     fontFamily: {
                         headline: ['Manrope', 'sans-serif'],

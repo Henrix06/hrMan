@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TaskComment extends Model
 {
-    protected $fillable = ['task_id', 'user_id', 'body'];
+    use BelongsToTenant;
+
+    protected $fillable = ['task_id', 'user_id', 'body', 'tenant_id'];
 
     public function task(): BelongsTo
     {

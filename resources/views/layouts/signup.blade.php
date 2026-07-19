@@ -16,16 +16,16 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#4e45e4',
-                        'primary-container': '#6760fd',
-                        'primary-dim': '#4135d8',
-                        'on-primary': '#fbf7ff',
-                        surface: '#f7f9fb',
-                        'surface-container-low': '#f0f4f7',
-                        'on-surface': '#2c3437',
-                        'on-surface-variant': '#596064',
-                        outline: '#747c80',
-                        'outline-variant': '#acb3b7',
+                        primary: '#8B5E3C',
+                        'primary-container': '#A67B5B',
+                        'primary-dim': '#7A4F30',
+                        'on-primary': '#FFF8F5',
+                        surface: '#FAF7F4',
+                        'surface-container-low': '#F5EFE9',
+                        'on-surface': '#2C2420',
+                        'on-surface-variant': '#5A534D',
+                        outline: '#7A736D',
+                        'outline-variant': '#B0AAA4',
                         error: '#a8364b',
                     },
                     fontFamily: {
@@ -59,7 +59,7 @@
         }
         .auth-input:focus {
             background: #ffffff;
-            border-color: #4e45e4;
+            border-color: #8B5E3C;
             box-shadow: 0 0 0 3px rgba(78,69,228,0.12);
         }
         .auth-input::placeholder { color: #acb3b7; }
@@ -91,7 +91,7 @@
 
         {{-- Decorative blobs --}}
         <div class="absolute top-20 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[100px] pointer-events-none"></div>
-        <div class="absolute bottom-10 left-0 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+        <div class="absolute bottom-10 left-0 w-48 h-48 bg-primary-container/10 rounded-full blur-[80px] pointer-events-none"></div>
     </div>
 
     {{-- ── Right panel: form ── --}}

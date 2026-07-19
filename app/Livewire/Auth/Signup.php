@@ -5,7 +5,6 @@ namespace App\Livewire\Auth;
 use App\Services\Payment\DummyPaymentGateway;
 use App\Services\TenantProvisioner;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -15,41 +14,33 @@ use Livewire\Component;
 #[Layout('layouts.signup')]
 class Signup extends Component
 {
-    // ── URL params passed from pricing page ───────────────────────────────────
     #[Url]
     public string $plan = 'free';
 
     #[Url]
     public string $billing = 'monthly';
 
-    // ── Wizard state ──────────────────────────────────────────────────────────
-    public int $step = 1; // 1 = credentials, 2 = payment, 3 = provisioning
+    public int $step = 1;
 
-    // ── Step 1: Credentials ───────────────────────────────────────────────────
+    // Step 1: Credentials
     public string $name         = '';
     public string $email        = '';
     public string $password     = '';
     public string $password_confirmation = '';
     public string $company_name = '';
-    public string $subdomain    = '';
-    public bool   $subdomain_available = true;
 
-    // ── Step 2: Payment ───────────────────────────────────────────────────────
-    public string $payment_method = 'card'; // card | eft
+    // Step 2: Payment
+    public string $payment_method = 'card';
     public string $card_number    = '';
     public string $card_expiry    = '';
     public string $card_cvc       = '';
     public string $card_name      = '';
     public string $eft_reference  = '';
 
-    // ── Step 3: Result ────────────────────────────────────────────────────────
+    // Step 3: Result
     public bool   $provisioning   = false;
     public bool   $done           = false;
-    public string $tenant_url     = '';
-    public string $tenant_login   = '';  // subdomain login URL to redirect to
     public string $error_message  = '';
-
-    // ── Computed ──────────────────────────────────────────────────────────────
 
     #[Computed]
     public function planConfig(): array
@@ -83,40 +74,14 @@ class Signup extends Component
         return ($this->planConfig['monthly_price'] ?? 0) === 0 || ($this->planConfig['monthly_price'] === null && $this->planConfig['yearly_price'] === null);
     }
 
-    // ── Lifecycle ─────────────────────────────────────────────────────────────
-
     public function mount(): void
     {
-        // Validate the plan key; fall back to free if unknown
         if (! array_key_exists($this->plan, config('pricing.plans', []))) {
             $this->plan = 'free';
         }
 
-        // Free plan (or null-price enterprise) skips payment step
         if ($this->isFree) {
             $this->billing = 'monthly';
-        }
-    }
-
-    // ── Step 1 ────────────────────────────────────────────────────────────────
-
-    public function updatedCompanyName(string $value): void
-    {
-        if (strlen($value) >= 2) {
-            $provisioner    = app(TenantProvisioner::class);
-            $this->subdomain = $provisioner->suggestSubdomain($value);
-            $this->subdomain_available = true;
-        }
-    }
-
-    public function updatedSubdomain(string $value): void
-    {
-        $slug = Str::slug($value, '-');
-        $this->subdomain = $slug;
-
-        if ($slug !== '') {
-            $provisioner = app(TenantProvisioner::class);
-            $this->subdomain_available = $provisioner->isSubdomainAvailable($slug);
         }
     }
 
@@ -127,13 +92,8 @@ class Signup extends Component
             'email'        => ['required', 'email', 'max:255', 'unique:users,email'],
             'password'     => ['required', 'string', 'confirmed', Password::defaults()],
             'company_name' => ['required', 'string', 'max:255'],
-            'subdomain'    => ['required', 'string', 'min:3', 'max:50', 'regex:/^[a-z0-9-]+$/', 'unique:tenants,subdomain'],
-        ], [
-            'subdomain.unique' => 'That subdomain is already taken. Please choose another.',
-            'subdomain.regex'  => 'Subdomain may only contain lowercase letters, numbers, and hyphens.',
         ]);
 
-        // Free plan skips payment
         if ($this->isFree) {
             $this->runProvisioning();
             return;
@@ -141,8 +101,6 @@ class Signup extends Component
 
         $this->step = 2;
     }
-
-    // ── Step 2 ────────────────────────────────────────────────────────────────
 
     public function backToCredentials(): void
     {
@@ -166,7 +124,6 @@ class Signup extends Component
             ]);
         }
 
-        // Process payment with dummy gateway
         $paymentGateway = app(DummyPaymentGateway::class);
         $planConfig = $this->planConfig;
         $amount = $this->billing === 'yearly' ? $planConfig['yearly_price'] : $planConfig['monthly_price'];
@@ -191,8 +148,6 @@ class Signup extends Component
         $this->runProvisioning($paymentResult);
     }
 
-    // ── Provisioning ──────────────────────────────────────────────────────────
-
     private function runProvisioning(?array $paymentResult = null): void
     {
         $this->step        = 3;
@@ -208,7 +163,6 @@ class Signup extends Component
                 'email'          => $this->email,
                 'password'       => $this->password,
                 'company_name'   => $this->company_name,
-                'subdomain'      => $this->subdomain,
                 'plan'           => $this->plan,
                 'billing_cycle'  => $this->billing,
                 'payment_method' => $paymentMethod,
@@ -216,7 +170,6 @@ class Signup extends Component
 
             Auth::login($result['user']);
 
-            $this->tenant_url   = $result['tenant']->url();
             $this->provisioning = false;
             $this->done         = true;
 
@@ -238,7 +191,6 @@ class Signup extends Component
         $payload = [];
 
         if ($this->payment_method === 'card') {
-            // Store only the last 4 digits — never the full number
             $last4 = substr(preg_replace('/\s+/', '', $this->card_number), -4);
             $payload = [
                 'type'       => 'card',
@@ -253,7 +205,6 @@ class Signup extends Component
             ];
         }
 
-        // Add dummy payment gateway result if available
         if ($paymentResult) {
             $payload['transaction_id'] = $paymentResult['transaction_id'] ?? null;
             $payload['gateway'] = 'dummy';
@@ -262,8 +213,6 @@ class Signup extends Component
 
         return $payload;
     }
-
-    // ── Render ────────────────────────────────────────────────────────────────
 
     public function render()
     {

@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FolderShare extends Model
 {
-    protected $fillable = ['folder_id', 'user_id', 'permission'];
+    use BelongsToTenant;
+
+    protected $fillable = ['folder_id', 'user_id', 'permission', 'tenant_id'];
 
     public function folder(): BelongsTo
     {

@@ -17,29 +17,28 @@ class TenantProvisioner
 {
     /**
      * Provision a brand-new tenant with a super-admin user.
-     *
-     * @param  array{
-     *   name: string,
-     *   email: string,
-     *   password: string,
-     *   company_name: string,
-     *   subdomain: string,
-     *   plan: string,
-     *   billing_cycle: string,
-     *   payment_method: array,
-     * } $data
      */
     public function provision(array $data): array
     {
         return DB::transaction(function () use ($data) {
+            // Auto-generate a subdomain slug from company name
+            $subdomain = Str::slug($data['company_name'], '-');
+            $subdomain = Str::limit($subdomain, 30, '');
+            $original = $subdomain;
+            $attempt = 0;
+            while (Tenant::where('subdomain', $subdomain)->exists()) {
+                $attempt++;
+                $subdomain = $original . '-' . $attempt;
+            }
+
             // 1. Create the tenant record
             $tenant = Tenant::create([
-                'name'          => $data['company_name'],
-                'subdomain'     => $data['subdomain'],
-                'plan'          => $data['plan'],
-                'billing_cycle' => $data['billing_cycle'],
-                'status'        => 'active',
-                'trial_ends_at' => now()->addDays(14),
+                'name'           => $data['company_name'],
+                'subdomain'      => $subdomain,
+                'plan'           => $data['plan'],
+                'billing_cycle'  => $data['billing_cycle'],
+                'status'         => 'active',
+                'trial_ends_at'  => now()->addDays(14),
                 'payment_method' => $data['payment_method'],
             ]);
 
@@ -77,33 +76,5 @@ class TenantProvisioner
 
             return compact('tenant', 'user');
         });
-    }
-
-    /**
-     * Generate a URL-safe subdomain slug from a company name,
-     * appending a random suffix if the slug is already taken.
-     */
-    public function suggestSubdomain(string $companyName): string
-    {
-        $base = Str::slug($companyName, '-');
-        $base = Str::limit($base, 30, '');
-
-        $candidate = $base;
-        $attempt   = 0;
-
-        while (Tenant::where('subdomain', $candidate)->exists()) {
-            $attempt++;
-            $candidate = $base . '-' . $attempt;
-        }
-
-        return $candidate;
-    }
-
-    /**
-     * Check whether a subdomain is available.
-     */
-    public function isSubdomainAvailable(string $subdomain): bool
-    {
-        return ! Tenant::where('subdomain', $subdomain)->exists();
     }
 }

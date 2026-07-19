@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AuditLog extends Model
 {
+    use BelongsToTenant;
+
     public $timestamps = false;
 
     protected $fillable = [
         'user_id', 'action', 'auditable_type', 'auditable_id',
-        'old_values', 'new_values', 'ip_address', 'user_agent', 'description',
+        'old_values', 'new_values', 'ip_address', 'user_agent', 'description', 'tenant_id',
     ];
 
     protected function casts(): array

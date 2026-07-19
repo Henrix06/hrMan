@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,7 +10,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ChatConversation extends Model
 {
-    protected $fillable = ['user_one_id', 'user_two_id', 'last_message_at'];
+    use BelongsToTenant;
+
+    protected $fillable = ['user_one_id', 'user_two_id', 'last_message_at', 'tenant_id'];
 
     protected function casts(): array
     {

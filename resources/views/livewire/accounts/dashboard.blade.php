@@ -6,13 +6,14 @@
         <div class="mb-6 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">{{ session('error') }}</div>
     @endif
 
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-            <h2 class="text-3xl font-extrabold text-slate-900 font-headline">Accounts</h2>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 font-headline">Accounts</h2>
             <p class="text-slate-500 text-sm mt-1">Company fund management and financial overview</p>
         </div>
         @can('manage accounts')
-        <button wire:click="openCreateAccount" class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-5 py-2.5 rounded-xl font-bold font-headline shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center gap-2">
+        <button wire:click="openCreateAccount"
+            class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-5 py-2.5 rounded-xl font-bold font-headline shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center justify-center gap-2 w-full sm:w-auto">
             <span class="material-symbols-outlined text-sm">add</span> New Account
         </button>
         @endcan
@@ -20,7 +21,7 @@
 
     {{-- Pending approvals summary --}}
     @can('approve procurement')
-    <div class="grid grid-cols-3 gap-4 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         @php
             $pendingLinks = [
                 'procurement' => ['route' => route('accounts.procurement'), 'icon' => 'shopping_cart', 'label' => 'Procurement', 'color' => 'text-violet-600 bg-violet-50'],
@@ -47,7 +48,7 @@
         @forelse($accounts as $account)
         @php
             $typeColors = [
-                'operating'  => 'from-indigo-500 to-violet-500',
+                'operating'  => 'from-primary to-primary-container',
                 'petty_cash' => 'from-amber-400 to-orange-500',
                 'payroll'    => 'from-emerald-500 to-teal-500',
                 'reserve'    => 'from-slate-500 to-slate-700',
@@ -93,7 +94,7 @@
                         <span class="material-symbols-outlined text-[16px]">{{ $account->active ? 'toggle_on' : 'toggle_off' }}</span>
                     </button>
                     @endcan
-                    <button wire:click="viewLedger({{ $account->id }})" class="p-2 rounded-xl text-slate-400 hover:text-indigo-500 hover:bg-slate-50 transition-colors" title="View Ledger">
+                    <button wire:click="viewLedger({{ $account->id }})" class="p-2 rounded-xl text-slate-400 hover:text-primary hover:bg-slate-50 transition-colors" title="View Ledger">
                         <span class="material-symbols-outlined text-[16px]">receipt_long</span>
                     </button>
                 </div>
@@ -132,8 +133,8 @@
 
     {{-- ── Create/Edit Account Modal ── --}}
     @if($showAccountModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md mx-4 p-8">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md p-6 md:p-8">
             <h3 class="text-2xl font-bold font-headline text-slate-900 mb-6">{{ $editingAccount ? 'Edit Account' : 'New Account' }}</h3>
             <form wire:submit="saveAccount" class="space-y-4">
                 <div>
@@ -169,8 +170,8 @@
 
     {{-- ── Top-Up Modal ── --}}
     @if($showTopUpModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm mx-4 p-8">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm p-6 md:p-8">
             <h3 class="text-2xl font-bold font-headline text-slate-900 mb-6">Top Up Account</h3>
             <form wire:submit="saveTopUp" class="space-y-4">
                 <div>
@@ -194,8 +195,8 @@
 
     {{-- ── Ledger Modal ── --}}
     @if($showLedgerModal && $ledgerAccount)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl mx-4 p-8 max-h-[90vh] overflow-y-auto">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto">
             <div class="flex items-start justify-between mb-6">
                 <div>
                     <h3 class="text-2xl font-bold font-headline text-slate-900">{{ $ledgerAccount->name }}</h3>

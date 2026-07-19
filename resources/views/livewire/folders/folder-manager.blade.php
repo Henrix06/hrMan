@@ -146,7 +146,7 @@
         <div class="glass-card rounded-2xl p-5 flex flex-col gap-3">
             <button wire:click="openFolder({{ $folder->id }})" @if($folder->is_encrypted && !$isUnlocked) disabled @endif
                 class="flex items-start gap-3 text-left w-full disabled:opacity-60 disabled:cursor-not-allowed">
-                <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 {{ $folder->is_encrypted ? 'bg-amber-100 text-amber-600' : 'bg-indigo-100 text-indigo-600' }}">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 {{ $folder->is_encrypted ? 'bg-amber-100 text-amber-600' : 'bg-primary/10 text-primary' }}">
                     <span class="material-symbols-outlined">{{ $folder->is_encrypted && !$isUnlocked ? 'lock' : 'folder_shared' }}</span>
                 </div>
                 <div class="flex-1 min-w-0">

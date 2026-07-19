@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Task extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
         'title', 'description', 'created_by', 'assigned_to',
-        'department_id', 'status', 'priority', 'visibility', 'due_date', 'completed_at',
+        'department_id', 'status', 'priority', 'visibility', 'due_date', 'completed_at', 'tenant_id',
     ];
 
     protected function casts(): array

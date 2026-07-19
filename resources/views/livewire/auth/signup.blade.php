@@ -3,7 +3,7 @@
     $isFree   = $this->isFree;
     $planName = $planCfg['name'] ?? 'Free';
     $modules  = config('pricing.modules', []);
-    $eftRef   = 'UMSIZI-' . strtoupper(\Illuminate\Support\Str::random(6));
+    $eftRef   = 'HRMAN-' . strtoupper(\Illuminate\Support\Str::random(6));
 @endphp
 
 <x-slot name="sidebar">
@@ -139,43 +139,16 @@
             </div>
         </div>
 
-        {{-- Company / subdomain --}}
+        {{-- Company --}}
         <div class="pt-2 border-t border-slate-100">
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4">Your Workspace</p>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4">Your Company</p>
 
-            <div class="mb-4">
+            <div>
                 <label class="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Company / Organisation Name</label>
-                <input wire:model.live.debounce.400ms="company_name" type="text"
+                <input wire:model="company_name" type="text"
                     placeholder="Acme Corp" required
                     class="auth-input @error('company_name') error @enderror"/>
                 @error('company_name') <p class="auth-error">{{ $message }}</p> @enderror
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Subdomain</label>
-                <div class="flex items-center">
-                    <input wire:model.live.debounce.400ms="subdomain" type="text"
-                        placeholder="acme-corp" required
-                        class="auth-input rounded-r-none border-r-0 @error('subdomain') error @enderror"
-                        style="border-radius: 0.75rem 0 0 0.75rem;"/>
-                    <span class="flex items-center h-[3.25rem] px-3 bg-slate-100 border border-slate-200 rounded-r-xl text-sm text-slate-500 whitespace-nowrap"
-                        style="border-radius: 0 0.75rem 0.75rem 0;">.{{ parse_url(config('app.url'), PHP_URL_HOST) }}</span>
-                </div>
-                @error('subdomain')
-                    <p class="auth-error">{{ $message }}</p>
-                @else
-                    @if($subdomain && $subdomain_available)
-                        <p class="mt-1 text-xs text-emerald-600 flex items-center gap-1">
-                            <span class="material-symbols-outlined filled text-[14px]">check_circle</span>
-                            Available
-                        </p>
-                    @elseif($subdomain && ! $subdomain_available)
-                        <p class="mt-1 text-xs text-red-600 flex items-center gap-1">
-                            <span class="material-symbols-outlined filled text-[14px]">cancel</span>
-                            Already taken
-                        </p>
-                    @endif
-                @enderror
             </div>
         </div>
 
@@ -391,21 +364,9 @@
         </div>
 
         <div>
-            <h2 class="font-headline font-black text-3xl text-slate-900 mb-2">You're all set! 🎉</h2>
+            <h2 class="font-headline font-black text-3xl text-slate-900 mb-2">You're all set!</h2>
             <p class="text-slate-500 text-sm max-w-sm mx-auto">
                 Your <strong>{{ $planName }}</strong> workspace has been created. You're logged in as the super admin.
-            </p>
-        </div>
-
-        {{-- Workspace URL --}}
-        <div class="w-full bg-slate-50 rounded-2xl p-4 border border-slate-200 text-left">
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Your workspace URL</p>
-            <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary text-[18px]">link</span>
-                <span class="text-sm font-mono text-slate-800 break-all">{{ $tenant_url }}</span>
-            </div>
-            <p class="text-xs text-slate-400 mt-2">
-                Bookmark this URL — it's your team's dedicated login page.
             </p>
         </div>
 

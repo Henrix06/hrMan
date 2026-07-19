@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,9 +10,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Folder extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
         'owner_id', 'parent_id', 'name', 'description',
-        'is_encrypted', 'encryption_key', 'is_public',
+        'is_encrypted', 'encryption_key', 'is_public', 'tenant_id',
     ];
 
     protected function casts(): array

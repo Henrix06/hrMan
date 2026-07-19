@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Department extends Model
 {
-    protected $fillable = ['name', 'code', 'description', 'manager_id', 'active'];
+    use BelongsToTenant;
+
+    protected $fillable = ['name', 'code', 'description', 'manager_id', 'active', 'tenant_id'];
 
     protected function casts(): array
     {

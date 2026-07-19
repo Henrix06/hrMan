@@ -17,16 +17,16 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#4e45e4',
-                        'primary-container': '#6760fd',
-                        'primary-dim': '#4135d8',
-                        'on-primary': '#fbf7ff',
-                        'on-primary-fixed-variant': '#edeaff',
-                        surface: '#f7f9fb',
-                        'surface-container-low': '#f0f4f7',
-                        'surface-container': '#eaeff2',
-                        'surface-container-lowest': '#ffffff',
-                        'surface-variant': '#dce4e8',
+                        primary: '#8B5E3C',
+                        'primary-container': '#A67B5B',
+                        'primary-dim': '#7A4F30',
+                        'on-primary': '#FFF8F5',
+                        'on-primary-fixed-variant': '#F5E6DB',
+                        surface: '#FAF7F4',
+                        'surface-container-low': '#F5EFE9',
+                        'surface-container': '#EFE9E3',
+                        'surface-container-lowest': '#FFFFFF',
+                        'surface-variant': '#E4DDD7',
                         'on-surface': '#2c3437',
                         'on-surface-variant': '#596064',
                         outline: '#747c80',
@@ -64,7 +64,7 @@
         }
         .auth-input:focus {
             background: #ffffff;
-            border-color: #4e45e4;
+            border-color: #8B5E3C;
             box-shadow: 0 0 0 3px rgba(78,69,228,0.12);
         }
         .auth-input::placeholder { color: #acb3b7; }
@@ -127,7 +127,7 @@
                     "uMsizi transformed how we manage our team. It's the HR tool we always wished existed."
                 </p>
                 <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-xs font-bold">MM</div>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-xs font-bold">MM</div>
                     <div>
                         <div class="text-xs font-semibold text-slate-800">Moses Mthombeni</div>
                         <div class="text-[10px] text-slate-400">CEO, Luminance Creative</div>
@@ -138,7 +138,7 @@
 
         {{-- Decorative blobs --}}
         <div class="absolute top-20 right-10 w-48 h-48 bg-primary/10 rounded-full blur-[80px] pointer-events-none"></div>
-        <div class="absolute bottom-20 left-10 w-64 h-64 bg-purple-300/20 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="absolute bottom-20 left-10 w-64 h-64 bg-primary-container/20 rounded-full blur-[100px] pointer-events-none"></div>
     </div>
 
     {{-- ── Right form panel ── --}}

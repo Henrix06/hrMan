@@ -50,7 +50,7 @@
                     ];
                     $roleColors = [
                         'agent'   => 'bg-blue-100 text-blue-700',
-                        'manager' => 'bg-purple-100 text-purple-700',
+                        'manager' => 'bg-primary/10 text-primary',
                     ];
                 @endphp
                 <tr class="hover:bg-slate-50/50 transition-colors">

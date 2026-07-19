@@ -1,17 +1,24 @@
 <div>
     @if(session('message'))
-        <div class="mb-6 px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm">{{ session('message') }}</div>
+        <div class="mb-6 px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">check_circle</span>
+            {{ session('message') }}
+        </div>
     @endif
     @if(session('error'))
-        <div class="mb-6 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">{{ session('error') }}</div>
+        <div class="mb-6 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">error</span>
+            {{ session('error') }}
+        </div>
     @endif
 
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-            <h2 class="text-3xl font-extrabold text-slate-900 font-headline">Procurement</h2>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 font-headline">Procurement</h2>
             <p class="text-slate-500 text-sm mt-1">Purchase requests and approvals</p>
         </div>
-        <button wire:click="openCreate" class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-5 py-2.5 rounded-xl font-bold font-headline shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center gap-2">
+        <button wire:click="openCreate"
+            class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-5 py-2.5 rounded-xl font-bold font-headline shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center justify-center gap-2 w-full sm:w-auto">
             <span class="material-symbols-outlined text-sm">add</span> New Request
         </button>
     </div>

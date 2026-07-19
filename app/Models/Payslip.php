@@ -2,32 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Payslip extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'payroll_detail_id',
-        'user_id',
-        'payslip_number',
-        'pay_period',
-        'issue_date',
-        'pay_date',
-        'gross_pay',
-        'total_deductions',
-        'net_pay',
-        'pdf_path',
-        'sent_to_employee',
-        'sent_at',
+        'payroll_detail_id', 'user_id', 'payslip_number', 'pay_period', 'issue_date',
+        'pay_date', 'gross_pay', 'total_deductions', 'net_pay', 'pdf_path',
+        'sent_to_employee', 'sent_at', 'tenant_id',
     ];
 
     /**

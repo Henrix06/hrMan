@@ -194,7 +194,7 @@
             </div>
 
             <!-- Quick Actions -->
-            <div class="glass-card p-6 rounded-[2rem] bg-gradient-to-br from-indigo-50 to-white">
+            <div class="glass-card p-6 rounded-[2rem] bg-gradient-to-br from-primary/5 to-white">
                 <h3 class="text-base font-bold font-headline text-slate-900 mb-4">Quick Actions</h3>
                 <div class="space-y-2">
                     <a href="{{ route('tasks.index') }}" wire:navigate

@@ -16,9 +16,9 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#4e45e4',
-                        'primary-dim': '#4135d8',
-                        'primary-light': '#edeaff',
+                        primary: '#8B5E3C',
+                        'primary-dim': '#7A4F30',
+                        'primary-light': '#F5E6DB',
                     },
                     fontFamily: {
                         headline: ['Manrope', 'sans-serif'],
@@ -176,12 +176,12 @@
                         </div>
                         <div class="flex gap-2">
                             <div class="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary" style="font-size:14px;">notifications</span></div>
-                            <div class="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-[10px] font-bold">AK</div>
+                            <div class="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-[10px] font-bold">AK</div>
                         </div>
                     </div>
                     {{-- Stat cards --}}
                     <div class="grid grid-cols-4 gap-3 mb-4">
-                        @foreach([['Employees','142','groups','bg-blue-50 text-blue-600'],['On Leave','8','beach_access','bg-amber-50 text-amber-600'],['Open Tasks','23','checklist','bg-purple-50 text-purple-600'],['Payroll','$48k','payments','bg-green-50 text-green-600']] as [$label,$val,$icon,$color])
+                        @foreach([['Employees','142','groups','bg-blue-50 text-blue-600'],['On Leave','8','beach_access','bg-amber-50 text-amber-600'],['Open Tasks','23','checklist','bg-primary/10 text-primary'],['Payroll','$48k','payments','bg-green-50 text-green-600']] as [$label,$val,$icon,$color])
                         <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
                             <div class="w-7 h-7 rounded-lg {{ $color }} flex items-center justify-center mb-2">
                                 <span class="material-symbols-outlined" style="font-size:14px;">{{ $icon }}</span>
@@ -196,7 +196,7 @@
                         <div class="text-[10px] font-semibold text-slate-500 mb-2">Headcount trend</div>
                         <div class="flex items-end gap-1 h-14">
                             @foreach([40,55,45,70,60,80,65,90,75,95,85,100] as $h)
-                            <div class="flex-1 rounded-sm" style="height:{{ $h }}%;background:linear-gradient(to top,#4e45e4,#8582ff);opacity:{{ 0.4 + $h/200 }}"></div>
+                            <div class="flex-1 rounded-sm" style="height:{{ $h }}%;background:linear-gradient(to top,#8B5E3C,#C49A78);opacity:{{ 0.4 + $h/200 }}"></div>
                             @endforeach
                         </div>
                     </div>
@@ -253,7 +253,7 @@
 
             {{-- Feature 2 --}}
             <div class="card-hover bg-slate-50 rounded-2xl p-7 border border-slate-100">
-                <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-5">
                     <span class="material-symbols-outlined text-[20px]">group</span>
                 </div>
                 <h3 class="font-headline font-bold text-lg text-slate-900 mb-2">Team Collaboration</h3>
@@ -261,7 +261,7 @@
                 {{-- Avatar stack --}}
                 <div class="flex items-center gap-3 mb-4">
                     <div class="flex -space-x-2">
-                        @foreach(['bg-primary/20 text-primary','bg-purple-200 text-purple-700','bg-amber-200 text-amber-700','bg-green-200 text-green-700'] as $i => $c)
+                        @foreach(['bg-primary/20 text-primary','bg-primary/20 text-primary','bg-amber-200 text-amber-700','bg-green-200 text-green-700'] as $i => $c)
                         <div class="w-9 h-9 rounded-full border-2 border-white {{ $c }} flex items-center justify-center text-xs font-bold">{{ ['AK','SR','MT','JL'][$i] }}</div>
                         @endforeach
                         <div class="w-9 h-9 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500">+2</div>
@@ -372,7 +372,7 @@
             "uMsizi has completely transformed how we view human resources. It's no longer a back-office burden — it's a strategic advantage our employees actually enjoy using."
         </blockquote>
         <div class="flex flex-col items-center gap-2">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white font-bold">MM</div>
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white font-bold">MM</div>
             <div class="font-headline font-semibold text-slate-900 text-sm">Moses Mthombeni</div>
             <div class="text-slate-400 text-xs">CEO at Luminance Creative</div>
         </div>

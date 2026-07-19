@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ChatMessage extends Model
 {
-    protected $fillable = ['conversation_id', 'sender_id', 'body', 'read_at'];
+    use BelongsToTenant;
+
+    protected $fillable = ['conversation_id', 'sender_id', 'body', 'read_at', 'tenant_id'];
 
     protected function casts(): array
     {

@@ -8,7 +8,7 @@ use App\Livewire\Admin\AuditLogViewer;
 use App\Livewire\Announcements\AnnouncementList;
 use App\Livewire\Assets\AssetList;
 use App\Livewire\Assets\MyAssets;
-use App\Livewire\Dashboard\EmployeeDashboard;
+use App\Livewire\Dashboard\CompanyDashboard;
 use App\Livewire\Departments\DepartmentList;
 use App\Livewire\Employees\CreateEmployee;
 use App\Livewire\Employees\EditEmployee;
@@ -35,7 +35,7 @@ Route::view('/', 'welcome');
 Route::get('pricing', PricingPage::class)->name('pricing');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', EmployeeDashboard::class)->name('dashboard');
+    Route::get('dashboard', CompanyDashboard::class)->name('dashboard');
 
     Route::prefix('employees')->name('employees.')->group(function () {
         Route::get('/', EmployeeList::class)->name('index');

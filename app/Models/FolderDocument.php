@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FolderDocument extends Model
 {
-    protected $fillable = ['folder_id', 'created_by', 'title', 'content', 'type', 'meta'];
+    use BelongsToTenant;
+
+    protected $fillable = ['folder_id', 'created_by', 'title', 'content', 'type', 'meta', 'tenant_id'];
 
     protected function casts(): array
     {

@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class ProcurementRequest extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
         'reference', 'requested_by', 'account_id', 'title', 'description',
         'vendor', 'estimated_cost', 'approved_amount', 'actual_cost',
         'category', 'priority', 'status', 'reviewed_by', 'reviewed_at',
-        'review_notes', 'required_by', 'receipt_path',
+        'review_notes', 'required_by', 'receipt_path', 'tenant_id',
     ];
 
     protected function casts(): array

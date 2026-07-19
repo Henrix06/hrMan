@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class HrNotification extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'hr_notifications';
 
-    protected $fillable = ['user_id', 'type', 'title', 'message', 'link', 'read_at'];
+    protected $fillable = ['user_id', 'type', 'title', 'message', 'link', 'read_at', 'tenant_id'];
 
     protected function casts(): array
     {

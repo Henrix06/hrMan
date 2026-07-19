@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Hash;
 
 class AssetAssignment extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
         'asset_id', 'user_id', 'assigned_by', 'returned_to',
         'assigned_date', 'expected_return_date', 'actual_return_date',
         'status', 'notes', 'return_notes', 'condition_on_return',
-        'integrity_hash',
+        'integrity_hash', 'tenant_id',
     ];
 
     protected function casts(): array

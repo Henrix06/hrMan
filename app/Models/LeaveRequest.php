@@ -2,30 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class LeaveRequest extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'user_id',
-        'leave_type_id',
-        'start_date',
-        'end_date',
-        'total_days',
-        'reason',
-        'status',
-        'approved_by',
-        'approved_at',
-        'approval_remarks',
+        'user_id', 'leave_type_id', 'start_date', 'end_date', 'total_days', 'reason',
+        'status', 'approved_by', 'approved_at', 'approval_remarks', 'tenant_id',
     ];
 
     /**
