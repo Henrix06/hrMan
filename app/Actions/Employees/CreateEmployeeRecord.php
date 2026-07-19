@@ -29,6 +29,7 @@ class CreateEmployeeRecord
             'department' => $data['department'],
             'position' => $data['position'],
             'phone' => $data['phone'],
+            'tenant_id' => auth()->user()->tenant_id,
         ]);
 
         $user->assignRole($data['role']);
