@@ -2,35 +2,34 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Livewire\Auth\Signup;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Volt\Volt;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_registration_screen_can_be_rendered(): void
+    public function test_registration_redirects_to_signup(): void
     {
         $response = $this->get('/register');
 
-        $response
-            ->assertOk()
-            ->assertSeeVolt('pages.auth.register');
+        $response->assertRedirect(route('signup'));
     }
 
-    public function test_new_users_can_register(): void
+    public function test_signup_screen_can_be_rendered(): void
     {
-        $component = Volt::test('pages.auth.register')
-            ->set('name', 'Test User')
-            ->set('email', 'test@example.com')
-            ->set('password', 'password')
-            ->set('password_confirmation', 'password');
+        $response = $this->get('/signup');
 
-        $component->call('register');
+        $response->assertOk()
+            ->assertSeeLivewire(Signup::class);
+    }
 
-        $component->assertRedirect(route('dashboard', absolute: false));
-
-        $this->assertAuthenticated();
+    public function test_signup_validates_required_fields(): void
+    {
+        Livewire::test(Signup::class)
+            ->call('nextToPayment')
+            ->assertHasErrors(['name', 'email', 'password', 'company_name']);
     }
 }

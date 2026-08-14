@@ -145,21 +145,9 @@
 
             <div>
                 <label class="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Company / Organisation Name</label>
-                <input wire:model="company_name" type="text"
-                    placeholder="Acme Corp"
-                    @if(!$organisation_id) required @endif
-                    class="auth-input @error('company_name') error @enderror"
-                    @if($organisation_id) disabled @endif/>
+                <input wire:model="company_name" type="text" placeholder="Acme Corp" required
+                    class="auth-input @error('company_name') error @enderror"/>
                 @error('company_name') <p class="auth-error">{{ $message }}</p> @enderror
-            </div>
-
-            <div class="mt-4">
-                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Organisation ID (Optional)</label>
-                <input wire:model="organisation_id" type="text"
-                    placeholder="Enter ID to join existing organisation"
-                    class="auth-input @error('organisation_id') error @enderror"/>
-                @error('organisation_id') <p class="auth-error">{{ $message }}</p> @enderror
-                <p class="text-xs text-slate-400 mt-1">Leave blank to create a new organisation</p>
             </div>
         </div>
 
@@ -339,8 +327,27 @@
 <div class="text-center space-y-6">
 
     @if($provisioning)
-    {{-- Spinner --}}
-    <div class="flex flex-col items-center gap-6 py-12">
+    {{-- Spinner with animated progress --}}
+    <div class="flex flex-col items-center gap-6 py-12"
+        x-data="{
+            steps: [
+                'Creating tenant record',
+                'Provisioning super admin',
+                'Enabling plan modules',
+                'Finalising workspace',
+            ],
+            active: -1,
+            init() {
+                let i = 0;
+                const tick = () => {
+                    if (i < this.steps.length) {
+                        this.active = i++;
+                        setTimeout(tick, 700);
+                    }
+                };
+                tick();
+            }
+        }">
         <div class="relative w-20 h-20">
             <div class="absolute inset-0 rounded-full border-4 border-primary/20"></div>
             <div class="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
@@ -349,61 +356,59 @@
             </div>
         </div>
         <div>
-            @if($organisation_id)
-            <h2 class="font-headline font-black text-2xl text-slate-900 mb-2">Joining organisation…</h2>
-            <p class="text-slate-400 text-sm">Setting up your account and assigning you to the organisation.</p>
-            @else
             <h2 class="font-headline font-black text-2xl text-slate-900 mb-2">Setting up your workspace…</h2>
             <p class="text-slate-400 text-sm">Creating your subdomain, configuring modules, and provisioning your account.</p>
-            @endif
         </div>
         <div class="w-full max-w-xs space-y-2 text-left">
-            @if($organisation_id)
-            @foreach(['Verifying organisation', 'Creating your account', 'Assigning role', 'Finalising'] as $i => $step_label)
-            <div class="flex items-center gap-3 text-sm text-slate-500">
-                <div class="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center">
-                    <svg class="animate-spin h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                    </svg>
+            <template x-for="(label, i) in steps" :key="i">
+                <div class="flex items-center gap-3 text-sm"
+                    :class="active > i ? 'text-emerald-600' : (active === i ? 'text-slate-700' : 'text-slate-400')">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center"
+                        :class="active > i ? 'bg-emerald-100' : (active === i ? 'bg-primary/10' : 'bg-slate-100')">
+                        <template x-if="active > i">
+                            <span class="material-symbols-outlined filled text-emerald-500 text-[14px]">check</span>
+                        </template>
+                        <template x-if="active === i">
+                            <svg class="animate-spin h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                            </svg>
+                        </template>
+                        <template x-if="active < i">
+                            <span class="text-xs font-medium" x-text="i + 1"></span>
+                        </template>
+                    </div>
+                    <span x-text="label"></span>
                 </div>
-                {{ $step_label }}
-            </div>
-            @endforeach
-            @else
-            @foreach(['Creating tenant record', 'Provisioning super admin', 'Enabling plan modules', 'Finalising workspace'] as $i => $step_label)
-            <div class="flex items-center gap-3 text-sm text-slate-500">
-                <div class="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center">
-                    <svg class="animate-spin h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                    </svg>
-                </div>
-                {{ $step_label }}
-            </div>
-            @endforeach
-            @endif
+            </template>
         </div>
     </div>
 
     @elseif($done)
     {{-- Success --}}
-    <div class="flex flex-col items-center gap-6 py-8">
+    <div class="flex flex-col items-center gap-6 py-8"
+        x-data="{ countdown: 3 }"
+        x-init="$nextTick(() => {
+            let timer = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                }
+            }, 1000);
+            window.addEventListener('redirect-to-dashboard', () => {
+                setTimeout(() => window.location.href = '{{ route('dashboard') }}', 3000);
+            });
+        })"
+        x-on:redirect-to-dashboard.window="setTimeout(() => window.location.href = '{{ route('dashboard') }}', 3000)">
         <div class="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center">
             <span class="material-symbols-outlined filled text-emerald-500 text-[40px]">check_circle</span>
         </div>
 
         <div>
             <h2 class="font-headline font-black text-3xl text-slate-900 mb-2">You're all set!</h2>
-            @if($organisation_id)
-            <p class="text-slate-500 text-sm max-w-sm mx-auto">
-                You've joined the organisation. Redirecting to your dashboard...
-            </p>
-            @else
             <p class="text-slate-500 text-sm max-w-sm mx-auto">
                 Your <strong>{{ $planName }}</strong> workspace has been created. Redirecting to your dashboard...
             </p>
-            @endif
         </div>
 
         <div class="flex items-center gap-2 text-sm text-slate-400">
@@ -411,14 +416,31 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
             </svg>
-            Taking you to your workspace...
+            Redirecting in <span x-text="countdown"></span>s...
         </div>
     </div>
 
-    @else
-    {{-- Error fallback (shouldn't normally show — error redirects to step 1) --}}
-    <div class="py-12">
-        <p class="text-slate-500">Something went wrong. <a href="{{ route('signup') }}" class="text-primary underline">Try again</a>.</p>
+    @elseif($error_message)
+    {{-- Error state with retry --}}
+    <div class="flex flex-col items-center gap-6 py-8">
+        <div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center">
+            <span class="material-symbols-outlined filled text-red-500 text-[40px]">error</span>
+        </div>
+        <div>
+            <h2 class="font-headline font-black text-2xl text-slate-900 mb-2">Something went wrong</h2>
+            <p class="text-slate-500 text-sm max-w-sm mx-auto">{{ $error_message }}</p>
+        </div>
+        <button wire:click="retryProvisioning" wire:loading.attr="disabled"
+            class="h-12 px-6 rounded-xl bg-primary text-white font-headline font-bold text-sm shadow-lg shadow-primary/20 hover:opacity-90 active:scale-[0.98] transition-all flex items-center gap-2">
+            <span wire:loading.remove>Try Again</span>
+            <span wire:loading class="flex items-center gap-2">
+                <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                </svg>
+                Retrying...
+            </span>
+        </button>
     </div>
     @endif
 

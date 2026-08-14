@@ -2,10 +2,11 @@
 
 namespace App\Livewire\Auth;
 
-use App\Models\Tenant;
 use App\Services\Payment\DummyPaymentGateway;
 use App\Services\TenantProvisioner;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -29,7 +30,6 @@ class Signup extends Component
     public string $password     = '';
     public string $password_confirmation = '';
     public string $company_name = '';
-    public ?string $organisation_id = '1';
 
     // Step 2: Payment
     public string $payment_method = 'card';
@@ -89,26 +89,18 @@ class Signup extends Component
 
     public function nextToPayment(): void
     {
-        // Validate base fields
+        if ($this->ensureNotRateLimited()) {
+            return;
+        }
+
         $this->validate([
             'name'         => ['required', 'string', 'max:255'],
             'email'        => ['required', 'email', 'max:255', 'unique:users,email'],
             'password'     => ['required', 'string', 'confirmed', Password::defaults()],
+            'company_name' => ['required', 'string', 'max:255'],
         ]);
 
-        // If joining an existing org, validate organisation_id exists
-        if ($this->organisation_id) {
-            $this->validate([
-                'organisation_id' => ['required', 'string', 'exists:tenants,id'],
-            ]);
-            // Clear company_name since we're joining an existing org
-            $this->company_name = '';
-        } else {
-            // Creating a new org, company_name is required
-            $this->validate([
-                'company_name' => ['required', 'string', 'max:255'],
-            ]);
-        }
+        RateLimiter::hit($this->rateLimitKey(), 3600);
 
         if ($this->isFree) {
             $this->runProvisioning();
@@ -125,6 +117,10 @@ class Signup extends Component
 
     public function submitPayment(): void
     {
+        if ($this->ensureNotRateLimited()) {
+            return;
+        }
+
         if ($this->payment_method === 'card') {
             $this->validate([
                 'card_number' => ['required', 'string'],
@@ -139,6 +135,8 @@ class Signup extends Component
                 'eft_reference' => ['required', 'string', 'max:255'],
             ]);
         }
+
+        RateLimiter::hit($this->rateLimitKey(), 3600);
 
         $paymentGateway = app(DummyPaymentGateway::class);
         $planConfig = $this->planConfig;
@@ -164,25 +162,52 @@ class Signup extends Component
         $this->runProvisioning($paymentResult);
     }
 
+    public function retryProvisioning(): void
+    {
+        $this->runProvisioning();
+    }
+
+    private function rateLimitKey(): string
+    {
+        return 'signup:' . Str::lower($this->email ?: 'anon');
+    }
+
+    private function ensureNotRateLimited(): bool
+    {
+        $key = $this->rateLimitKey();
+
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            $seconds = RateLimiter::availableIn($key);
+            $this->error_message = 'Too many attempts. Please try again in ' . $seconds . ' seconds.';
+            return true;
+        }
+
+        return false;
+    }
+
     private function runProvisioning(?array $paymentResult = null): void
     {
-        $this->step        = 3;
-        $this->provisioning = true;
+        $this->step         = 3;
+        $this->provisioning  = true;
         $this->error_message = '';
+
+        $this->validate([
+            'password' => ['required', 'string', 'confirmed', Password::defaults()],
+        ]);
 
         try {
             $paymentMethod = $this->buildPaymentMethodPayload($paymentResult);
 
             $provisioner = app(TenantProvisioner::class);
             $result      = $provisioner->provision([
-                'name'            => $this->name,
-                'email'           => $this->email,
-                'password'        => $this->password,
-                'company_name'    => $this->company_name,
-                'organisation_id' => $this->organisation_id,
-                'plan'            => $this->plan,
-                'billing_cycle'   => $this->billing,
-                'payment_method'  => $paymentMethod,
+                'name'           => $this->name,
+                'email'          => $this->email,
+                'password'       => $this->password,
+                'password_confirmation' => $this->password_confirmation,
+                'company_name'   => $this->company_name,
+                'plan'           => $this->plan,
+                'billing_cycle'  => $this->billing,
+                'payment_method' => $paymentMethod,
             ]);
 
             Auth::login($result['user']);
@@ -190,13 +215,11 @@ class Signup extends Component
             $this->provisioning = false;
             $this->done         = true;
 
-            // Auto-redirect to dashboard after a short delay
-            $this->redirect(route('dashboard'), navigate: true);
+            $this->dispatch('redirect-to-dashboard');
 
         } catch (\Throwable $e) {
             $this->provisioning  = false;
             $this->error_message = 'Something went wrong while setting up your workspace. Please try again.';
-            $this->step          = 1;
 
             report($e);
         }
