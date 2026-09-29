@@ -37,31 +37,6 @@ return new class extends Migration
                 $table->index('created_at', 'acct_txn_created');
             });
         }
-
-        // real estate: lease lookups
-        if (Schema::hasTable('leases')) {
-            Schema::table('leases', function (Blueprint $table) {
-                $table->index(['property_id', 'status'], 'leases_property_status');
-                $table->index(['tenant_id', 'status'], 'leases_tenant_status');
-                $table->index('end_date', 'leases_end_date');
-            });
-        }
-
-        // rent_invoices: unpaid invoice lookups
-        if (Schema::hasTable('rent_invoices')) {
-            Schema::table('rent_invoices', function (Blueprint $table) {
-                $table->index(['lease_id', 'status'], 'rent_inv_lease_status');
-                $table->index('due_date', 'rent_inv_due_date');
-            });
-        }
-
-        // maintenance_requests: open requests per property
-        if (Schema::hasTable('maintenance_requests')) {
-            Schema::table('maintenance_requests', function (Blueprint $table) {
-                $table->index(['property_id', 'status'], 'maint_property_status');
-                $table->index('priority', 'maint_priority');
-            });
-        }
     }
 
     public function down(): void
@@ -76,15 +51,6 @@ return new class extends Migration
         }
         if (Schema::hasTable('account_transactions')) {
             Schema::table('account_transactions', fn($t) => $t->dropIndex(['acct_txn_account_type', 'acct_txn_created']));
-        }
-        if (Schema::hasTable('leases')) {
-            Schema::table('leases', fn($t) => $t->dropIndex(['leases_property_status', 'leases_tenant_status', 'leases_end_date']));
-        }
-        if (Schema::hasTable('rent_invoices')) {
-            Schema::table('rent_invoices', fn($t) => $t->dropIndex(['rent_inv_lease_status', 'rent_inv_due_date']));
-        }
-        if (Schema::hasTable('maintenance_requests')) {
-            Schema::table('maintenance_requests', fn($t) => $t->dropIndex(['maint_property_status', 'maint_priority']));
         }
     }
 };

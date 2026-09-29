@@ -128,6 +128,23 @@ new class extends Component
             @endrole
         </div>
 
+        {{-- Sales --}}
+        @can('view sales')
+        <div>
+            <p class="px-4 mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Sales</p>
+            <a href="{{ route('sales.orders') }}" wire:navigate
+                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('sales.orders') ? 'bg-white/80 dark:bg-white/10 text-primary dark:text-primary-container font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-white/40 dark:hover:bg-white/5' }}">
+                <span class="material-symbols-outlined text-[20px]">point_of_sale</span>
+                <span class="font-headline text-sm">Orders</span>
+            </a>
+            <a href="{{ route('sales.transport') }}" wire:navigate
+                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('sales.transport') ? 'bg-white/80 dark:bg-white/10 text-primary dark:text-primary-container font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-white/40 dark:hover:bg-white/5' }}">
+                <span class="material-symbols-outlined text-[20px]">local_shipping</span>
+                <span class="font-headline text-sm">Transport Requests</span>
+            </a>
+        </div>
+        @endcan
+
         {{-- Accounts --}}
         @can('view accounts')
         <div>
@@ -157,38 +174,6 @@ new class extends Component
         </div>
         @endcan
 
-        {{-- Real Estate --}}
-        @if(auth()->user()->hasPermissionTo('real_estate.view'))
-        <div>
-            <p class="px-4 mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Real Estate</p>
-            <a href="{{ route('real-estate.properties.index') }}" wire:navigate
-                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('real-estate.properties.*') ? 'bg-white/80 dark:bg-white/10 text-primary dark:text-primary-container font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-white/40 dark:hover:bg-white/5' }}">
-                <span class="material-symbols-outlined text-[20px]">apartment</span>
-                <span class="font-headline text-sm">Properties</span>
-            </a>
-            <a href="{{ route('real-estate.tenants.index') }}" wire:navigate
-                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('real-estate.tenants.*') ? 'bg-white/80 dark:bg-white/10 text-primary dark:text-primary-container font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-white/40 dark:hover:bg-white/5' }}">
-                <span class="material-symbols-outlined text-[20px]">person_pin</span>
-                <span class="font-headline text-sm">Tenants</span>
-            </a>
-            <a href="{{ route('real-estate.leases.index') }}" wire:navigate
-                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('real-estate.leases.*') ? 'bg-white/80 dark:bg-white/10 text-primary dark:text-primary-container font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-white/40 dark:hover:bg-white/5' }}">
-                <span class="material-symbols-outlined text-[20px]">description</span>
-                <span class="font-headline text-sm">Leases</span>
-            </a>
-            <a href="{{ route('real-estate.invoices.index') }}" wire:navigate
-                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('real-estate.invoices.*') ? 'bg-white/80 dark:bg-white/10 text-primary dark:text-primary-container font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-white/40 dark:hover:bg-white/5' }}">
-                <span class="material-symbols-outlined text-[20px]">receipt_long</span>
-                <span class="font-headline text-sm">Rent Invoices</span>
-            </a>
-            <a href="{{ route('real-estate.maintenance.index') }}" wire:navigate
-                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('real-estate.maintenance.*') ? 'bg-white/80 dark:bg-white/10 text-primary dark:text-primary-container font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-white/40 dark:hover:bg-white/5' }}">
-                <span class="material-symbols-outlined text-[20px]">build</span>
-                <span class="font-headline text-sm">Maintenance</span>
-            </a>
-        </div>
-        @endif
-
         {{-- Payroll --}}
         <div>
             <p class="px-4 mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Payroll</p>
@@ -210,10 +195,25 @@ new class extends Component
         @role('Super Admin')
         <div>
             <p class="px-4 mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Admin</p>
+            <a href="{{ route('team.index') }}" wire:navigate
+                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('team.*') ? 'bg-white/80 dark:bg-white/10 text-primary dark:text-primary-container font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-white/40 dark:hover:bg-white/5' }}">
+                <span class="material-symbols-outlined text-[20px]">group_add</span>
+                <span class="font-headline text-sm">Team</span>
+            </a>
             <a href="{{ route('admin.audit-logs') }}" wire:navigate
                 class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('admin.*') ? 'bg-white/80 dark:bg-white/10 text-primary dark:text-primary-container font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-white/40 dark:hover:bg-white/5' }}">
                 <span class="material-symbols-outlined text-[20px]">manage_history</span>
                 <span class="font-headline text-sm">Audit Logs</span>
+            </a>
+            <a href="{{ route('plan.index') }}" wire:navigate
+                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('plan.*') ? 'bg-white/80 dark:bg-white/10 text-primary dark:text-primary-container font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-white/40 dark:hover:bg-white/5' }}">
+                <span class="material-symbols-outlined text-[20px]">workspace_premium</span>
+                <span class="font-headline text-sm">Plan &amp; Modules</span>
+            </a>
+            <a href="{{ route('license.index') }}" wire:navigate
+                class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 {{ request()->routeIs('license.*') ? 'bg-white/80 dark:bg-white/10 text-primary dark:text-primary-container font-bold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-white/40 dark:hover:bg-white/5' }}">
+                <span class="material-symbols-outlined text-[20px]">key</span>
+                <span class="font-headline text-sm">Licence</span>
             </a>
         </div>
         @endrole
@@ -308,7 +308,7 @@ new class extends Component
                 <div class="max-h-72 overflow-y-auto divide-y divide-slate-50 dark:divide-white/5">
                     @forelse($recentNotifs as $notif)
                     @php
-                        $icons = ['task_assigned'=>'task_alt','task_comment'=>'comment','announcement'=>'campaign','leave_approved'=>'check_circle','leave_rejected'=>'cancel','folder_shared'=>'folder_shared','default'=>'notifications'];
+                        $icons = ['task_assigned'=>'task_alt','task_comment'=>'comment','task_mention'=>'alternate_email','task_status'=>'swap_horiz','sales_order'=>'point_of_sale','transport_requested'=>'local_shipping','transport_status'=>'local_shipping','announcement'=>'campaign','leave_approved'=>'check_circle','leave_rejected'=>'cancel','folder_shared'=>'folder_shared','default'=>'notifications'];
                         $icon = $icons[$notif->type] ?? $icons['default'];
                     @endphp
                     <div class="flex items-start gap-3 px-4 py-3 {{ !$notif->isRead() ? 'bg-primary/[0.03]' : '' }} hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">

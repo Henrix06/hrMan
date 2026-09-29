@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolePermissionSeeder extends Seeder
 {
@@ -14,7 +15,7 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Create permissions
         $userPermissions = [
@@ -68,31 +69,37 @@ class RolePermissionSeeder extends Seeder
             'approve claims',
         ];
 
-        $realEstatePermissions = [
-            'real_estate.view',
-            'real_estate.manage_leases',
-            'real_estate.manage_maintenance',
-            'real_estate.manage_invoices',
+        // Everyone who sells can log orders and arrange their transport;
+        // confirming orders and running the transport desk is a management job.
+        $salesStaffPermissions = [
+            'view sales',
+            'create sales order',
+            'request transport',
         ];
 
+        $salesPermissions = array_merge($salesStaffPermissions, [
+            'manage sales',
+            'manage transport',
+        ]);
+
         // Create all permissions
-        $allPermissions = array_merge($userPermissions, $managerPermissions, $hrPermissions, $adminPermissions, $assetPermissions, $accountPermissions, $realEstatePermissions);
-        
+        $allPermissions = array_merge($userPermissions, $managerPermissions, $hrPermissions, $adminPermissions, $assetPermissions, $accountPermissions, $salesPermissions);
+
         foreach ($allPermissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Create roles and assign permissions
         $employeeRole = Role::firstOrCreate(['name' => 'Employee']);
-        $employeeRole->syncPermissions(array_merge($userPermissions, ['view assets', 'view accounts', 'real_estate.view']));
+        $employeeRole->syncPermissions(array_merge($userPermissions, ['view assets', 'view accounts'], $salesStaffPermissions));
 
         $managerRole = Role::firstOrCreate(['name' => 'Manager']);
-        $managerRole->syncPermissions(array_merge($userPermissions, $managerPermissions, ['view assets', 'assign assets', 'view accounts', 'approve claims', 'real_estate.view']));
+        $managerRole->syncPermissions(array_merge($userPermissions, $managerPermissions, ['view assets', 'assign assets', 'view accounts', 'approve claims'], $salesStaffPermissions, ['manage sales']));
 
         $hrAdminRole = Role::firstOrCreate(['name' => 'HR Admin']);
-        $hrAdminRole->syncPermissions(array_merge($userPermissions, $managerPermissions, $hrPermissions, $assetPermissions, $accountPermissions, $realEstatePermissions));
+        $hrAdminRole->syncPermissions(array_merge($userPermissions, $managerPermissions, $hrPermissions, $assetPermissions, $accountPermissions, $salesPermissions));
 
         $superAdminRole = Role::firstOrCreate(['name' => 'Super Admin']);
-        $superAdminRole->syncPermissions(array_merge($userPermissions, $managerPermissions, $hrPermissions, $adminPermissions, $assetPermissions, $accountPermissions, $realEstatePermissions));
+        $superAdminRole->syncPermissions(array_merge($userPermissions, $managerPermissions, $hrPermissions, $adminPermissions, $assetPermissions, $accountPermissions, $salesPermissions));
     }
 }

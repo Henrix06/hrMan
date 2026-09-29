@@ -4,22 +4,30 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Trial
+    |--------------------------------------------------------------------------
+    | Length of the complimentary trial granted to a new company and to any
+    | company that switches onto a paid plan without an active subscription.
+    */
+    'trial_days' => 14,
+
+    /*
+    |--------------------------------------------------------------------------
     | Available Modules
     |--------------------------------------------------------------------------
     */
     'modules' => [
         'employee_management' => 'Employee Management',
-        'accounting'          => 'Accounting & Claims',
-        'leave_management'    => 'Leave Management',
-        'payroll'             => 'Payroll Processing',
-        'asset_management'    => 'Asset Management',
-        'task_management'     => 'Task Management',
-        'announcements'       => 'Announcements',
-        'chat'                => 'Team Chat',
-        'audit_logs'          => 'Audit Logs',
-        'departments'         => 'Department Management',
-        'real_estate'         => 'Real Estate Management',
-        'real_estate_accountant' => 'Real Estate Accountant',
+        'accounting' => 'Accounting & Claims',
+        'leave_management' => 'Leave Management',
+        'payroll' => 'Payroll Processing',
+        'asset_management' => 'Asset Management',
+        'task_management' => 'Task Management',
+        'sales' => 'Sales & Transport',
+        'announcements' => 'Announcements',
+        'chat' => 'Team Chat',
+        'audit_logs' => 'Audit Logs',
+        'departments' => 'Department Management',
     ],
 
     /*
@@ -34,14 +42,14 @@ return [
     'plans' => [
 
         'free' => [
-            'name'           => 'Free',
-            'description'    => 'For solo admins and micro-teams up to 5 people.',
-            'monthly_price'  => 0,
-            'yearly_price'   => 0,
+            'name' => 'Free',
+            'description' => 'For solo admins and micro-teams up to 5 people.',
+            'monthly_price' => 0,
+            'yearly_price' => 0,
             'employee_limit' => 5,
-            'highlighted'    => false,
-            'badge'          => null,
-            'modules'        => [
+            'highlighted' => false,
+            'badge' => null,
+            'modules' => [
                 'employee_management',
                 'accounting',
                 'departments',
@@ -49,14 +57,14 @@ return [
         ],
 
         'starter' => [
-            'name'           => 'Starter',
-            'description'    => 'For growing teams that need HR essentials.',
-            'monthly_price'  => 15,
-            'yearly_price'   => 144,   // 20% discount (15 × 12 × 0.8)
+            'name' => 'Starter',
+            'description' => 'For growing teams that need HR essentials.',
+            'monthly_price' => 15,
+            'yearly_price' => 144,   // 20% discount (15 × 12 × 0.8)
             'employee_limit' => 25,
-            'highlighted'    => false,
-            'badge'          => null,
-            'modules'        => [
+            'highlighted' => false,
+            'badge' => null,
+            'modules' => [
                 'employee_management',
                 'accounting',
                 'departments',
@@ -67,14 +75,14 @@ return [
         ],
 
         'professional' => [
-            'name'           => 'Professional',
-            'description'    => 'Full HR suite for established businesses.',
-            'monthly_price'  => 20,
-            'yearly_price'   => 192,   // 20% discount (20 × 12 × 0.8)
+            'name' => 'Professional',
+            'description' => 'Full HR suite for established businesses.',
+            'monthly_price' => 20,
+            'yearly_price' => 192,   // 20% discount (20 × 12 × 0.8)
             'employee_limit' => 100,
-            'highlighted'    => true,
-            'badge'          => 'Most Popular',
-            'modules'        => [
+            'highlighted' => true,
+            'badge' => 'Most Popular',
+            'modules' => [
                 'employee_management',
                 'accounting',
                 'departments',
@@ -83,18 +91,19 @@ return [
                 'announcements',
                 'asset_management',
                 'task_management',
+                'sales',
             ],
         ],
 
         'enterprise' => [
-            'name'           => 'Enterprise',
-            'description'    => 'Unlimited scale with full visibility and control. Contact us for pricing.',
-            'monthly_price'  => null,
-            'yearly_price'   => null,
+            'name' => 'Enterprise',
+            'description' => 'Unlimited scale with full visibility and control. Contact us for pricing.',
+            'monthly_price' => null,
+            'yearly_price' => null,
             'employee_limit' => null,
-            'highlighted'    => false,
-            'badge'          => null,
-            'modules'        => [
+            'highlighted' => false,
+            'badge' => null,
+            'modules' => [
                 'employee_management',
                 'accounting',
                 'departments',
@@ -103,10 +112,9 @@ return [
                 'announcements',
                 'asset_management',
                 'task_management',
+                'sales',
                 'chat',
                 'audit_logs',
-                'real_estate',
-                'real_estate_accountant',
             ],
         ],
 

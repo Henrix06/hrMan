@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
             LeaveTypeSeeder::class,
             UserSeeder::class,
+            LicenseCodeSeeder::class,
         ]);
     }
 }

@@ -29,7 +29,7 @@ class RegistrationTest extends TestCase
     public function test_signup_validates_required_fields(): void
     {
         Livewire::test(Signup::class)
-            ->call('nextToPayment')
+            ->call('signup')
             ->assertHasErrors(['name', 'email', 'password', 'company_name']);
     }
 }

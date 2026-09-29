@@ -3,29 +3,47 @@
 namespace App\Livewire\Employees;
 
 use App\Actions\Employees\UpdateEmployeeRecord;
+use App\Livewire\Employees\Concerns\WithHrProfileFields;
 use App\Models\User;
 use App\Support\Employees\EmployeeReferenceData;
 use Livewire\Component;
 
 class EditEmployee extends Component
 {
+    use WithHrProfileFields;
+
     public User $employee;
+
     public $name = '';
+
     public $email = '';
+
     public $password = '';
+
     public $employee_id = '';
+
     public $manager_id = '';
+
     public $hire_date = '';
+
     public $status = '';
+
     public $base_salary = '';
+
     public $department = '';
+
     public $position = '';
+
     public $phone = '';
+
     public $role = '';
 
     public function mount(User $employee): void
     {
         abort_unless(auth()->user()?->can('edit employee'), 403);
+
+        // Never allow edits across companies by guessing an id.
+        abort_unless($employee->tenant_id === auth()->user()?->tenant_id, 404);
 
         $this->employee = $employee;
         $this->name = $employee->name;
@@ -39,11 +57,13 @@ class EditEmployee extends Component
         $this->position = $employee->position;
         $this->phone = $employee->phone;
         $this->role = $employee->roles->first()?->name ?? 'Employee';
+
+        $this->fillHrProfileFrom($employee);
     }
 
     protected function rules(): array
     {
-        return [
+        return array_merge([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$this->employee->id,
             'password' => 'nullable|min:8',
@@ -56,14 +76,14 @@ class EditEmployee extends Component
             'position' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'role' => 'required|exists:roles,name',
-        ];
+        ], $this->hrProfileRules());
     }
 
     public function update(): void
     {
         $this->validate();
 
-        app(UpdateEmployeeRecord::class)->execute($this->employee, [
+        app(UpdateEmployeeRecord::class)->execute($this->employee, array_merge([
             'name' => $this->name,
             'email' => $this->email,
             'password' => $this->password,
@@ -76,7 +96,7 @@ class EditEmployee extends Component
             'position' => $this->position,
             'phone' => $this->phone,
             'role' => $this->role,
-        ]);
+        ], $this->hrProfileData()));
 
         session()->flash('message', 'Employee updated successfully.');
 

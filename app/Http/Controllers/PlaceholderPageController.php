@@ -32,12 +32,6 @@ class PlaceholderPageController extends Controller
             'assets.index' => ['Assets', 'The asset management page needs a non-Livewire implementation.'],
             'assets.my' => ['My Assets', 'The personal asset page needs a non-Livewire implementation.'],
             'admin.audit-logs' => ['Audit Logs', 'The audit log viewer needs a non-Livewire implementation.'],
-            'real-estate.properties.index' => ['Properties', 'The real estate properties page needs a non-Livewire implementation.'],
-            'real-estate.properties.show' => ['Property Details', 'The property detail page needs a non-Livewire implementation.'],
-            'real-estate.tenants.index' => ['Tenants', 'The tenants page needs a non-Livewire implementation.'],
-            'real-estate.leases.index' => ['Leases', 'The lease manager needs a non-Livewire implementation.'],
-            'real-estate.invoices.index' => ['Rent Invoices', 'The invoice management page needs a non-Livewire implementation.'],
-            'real-estate.maintenance.index' => ['Maintenance', 'The maintenance board needs a non-Livewire implementation.'],
         ];
 
         [$title, $description] = $pages[$request->route()->getName()] ?? ['Unavailable Page', 'This page was previously mounted through Livewire and has not yet been rebuilt.'];

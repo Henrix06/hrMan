@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Livewire\Auth\AcceptInvitation;
 use App\Livewire\Auth\Signup;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -9,8 +10,11 @@ Route::middleware('guest')->group(function () {
     // Multi-step signup — reached from the pricing page
     Route::get('signup', Signup::class)->name('signup');
 
+    // Teammate invitation acceptance
+    Route::get('invitation/{token}', AcceptInvitation::class)->name('invitation.accept');
+
     // Legacy /register redirects to the new signup flow
-    Route::get('register', fn() => redirect()->route('signup'))->name('register');
+    Route::get('register', fn () => redirect()->route('signup'))->name('register');
 
     Volt::route('login', 'pages.auth.login')
         ->name('login');

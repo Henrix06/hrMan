@@ -3,13 +3,14 @@
 namespace App\Actions\Employees;
 
 use App\Models\User;
+use App\Support\Employees\HrProfileFields;
 use Illuminate\Support\Facades\Hash;
 
 class UpdateEmployeeRecord
 {
     public function execute(User $employee, array $data): User
     {
-        $attributes = [
+        $attributes = array_merge([
             'name' => $data['name'],
             'email' => $data['email'],
             'employee_id' => $data['employee_id'],
@@ -20,9 +21,9 @@ class UpdateEmployeeRecord
             'department' => $data['department'],
             'position' => $data['position'],
             'phone' => $data['phone'],
-        ];
+        ], HrProfileFields::extract($data));
 
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $attributes['password'] = Hash::make($data['password']);
         }
 

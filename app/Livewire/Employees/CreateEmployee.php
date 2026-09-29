@@ -3,22 +3,36 @@
 namespace App\Livewire\Employees;
 
 use App\Actions\Employees\CreateEmployeeRecord;
+use App\Livewire\Employees\Concerns\WithHrProfileFields;
 use App\Support\Employees\EmployeeReferenceData;
 use Livewire\Component;
 
 class CreateEmployee extends Component
 {
+    use WithHrProfileFields;
+
     public $name = '';
+
     public $email = '';
+
     public $password = '';
+
     public $employee_id = '';
+
     public $manager_id = '';
+
     public $hire_date = '';
+
     public $status = 'probation';
+
     public $base_salary = '';
+
     public $department = '';
+
     public $position = '';
+
     public $phone = '';
+
     public $role = 'Employee';
 
     public function mount(): void
@@ -28,7 +42,7 @@ class CreateEmployee extends Component
 
     protected function rules(): array
     {
-        return [
+        return array_merge([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
@@ -41,14 +55,14 @@ class CreateEmployee extends Component
             'position' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'role' => 'required|exists:roles,name',
-        ];
+        ], $this->hrProfileRules());
     }
 
     public function save(): void
     {
         $this->validate();
 
-        app(CreateEmployeeRecord::class)->execute([
+        app(CreateEmployeeRecord::class)->execute(array_merge([
             'name' => $this->name,
             'email' => $this->email,
             'password' => $this->password,
@@ -61,7 +75,7 @@ class CreateEmployee extends Component
             'position' => $this->position,
             'phone' => $this->phone,
             'role' => $this->role,
-        ]);
+        ], $this->hrProfileData()));
 
         session()->flash('message', 'Employee created successfully.');
 

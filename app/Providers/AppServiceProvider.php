@@ -5,7 +5,9 @@ namespace App\Providers;
 use App\Contracts\FeatureFlagServiceInterface;
 use App\Contracts\ModuleRegistryInterface;
 use App\Contracts\RuleServiceInterface;
+use App\Models\SalesOrder;
 use App\Models\Task;
+use App\Policies\SalesOrderPolicy;
 use App\Policies\TaskPolicy;
 use App\Services\FeatureFlagService;
 use App\Services\ModuleRegistry;
@@ -32,9 +34,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Task::class, TaskPolicy::class);
-        Gate::policy(\App\Models\RealEstate\Lease::class, \App\Policies\RealEstate\LeasePolicy::class);
-        Gate::policy(\App\Models\RealEstate\RentInvoice::class, \App\Policies\RealEstate\RentInvoicePolicy::class);
-        Gate::policy(\App\Models\RealEstate\MaintenanceRequest::class, \App\Policies\RealEstate\MaintenanceRequestPolicy::class);
+        Gate::policy(SalesOrder::class, SalesOrderPolicy::class);
 
         // Permission gate for module management
         Gate::define('manage-modules', function ($user) {

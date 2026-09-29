@@ -4,16 +4,17 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -35,6 +36,18 @@ class User extends Authenticatable
         'department_id',
         'position',
         'phone',
+
+        // Personal
+        'date_of_birth', 'gender', 'national_id', 'nationality', 'marital_status',
+        // Contact
+        'personal_email', 'address_line1', 'address_line2', 'city', 'state', 'postal_code', 'country',
+        // Emergency contact
+        'emergency_contact_name', 'emergency_contact_relationship', 'emergency_contact_phone',
+        // Employment terms
+        'employment_type', 'contract_start_date', 'contract_end_date', 'probation_end_date',
+        'work_location', 'job_grade', 'pay_frequency',
+        // Bank & tax
+        'bank_name', 'bank_account_number', 'bank_branch', 'tax_number',
     ];
 
     /**
@@ -59,6 +72,10 @@ class User extends Authenticatable
             'password' => 'hashed',
             'hire_date' => 'date',
             'base_salary' => 'decimal:2',
+            'date_of_birth' => 'date',
+            'contract_start_date' => 'date',
+            'contract_end_date' => 'date',
+            'probation_end_date' => 'date',
         ];
     }
 
@@ -126,7 +143,7 @@ class User extends Authenticatable
         return $this->hasMany(Payslip::class);
     }
 
-    public function department(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
     }
@@ -148,22 +165,67 @@ class User extends Authenticatable
 
     public function assetAssignments(): HasMany
     {
-        return $this->hasMany(\App\Models\AssetAssignment::class, 'user_id');
+        return $this->hasMany(AssetAssignment::class, 'user_id');
     }
 
     public function activeAssets(): HasMany
     {
-        return $this->hasMany(\App\Models\AssetAssignment::class, 'user_id')->where('status', 'active');
+        return $this->hasMany(AssetAssignment::class, 'user_id')->where('status', 'active');
     }
 
     public function unreadNotificationsCount(): int
     {
         // Cache for 30 seconds per user to avoid hitting DB on every page render
-        return \Illuminate\Support\Facades\Cache::remember(
+        return Cache::remember(
             "unread_notif_{$this->id}",
             30,
-            fn() => $this->hrNotifications()->whereNull('read_at')->count()
+            fn () => $this->hrNotifications()->whereNull('read_at')->count()
         );
+    }
+
+    /**
+     * Age in whole years, when a date of birth is on file.
+     */
+    public function age(): ?int
+    {
+        return $this->date_of_birth?->age;
+    }
+
+    /**
+     * The postal address on one line, or null when nothing is recorded.
+     */
+    public function fullAddress(): ?string
+    {
+        $parts = array_filter([
+            $this->address_line1,
+            $this->address_line2,
+            $this->city,
+            $this->state,
+            $this->postal_code,
+            $this->country,
+        ], fn ($part) => $part !== null && trim((string) $part) !== '');
+
+        return $parts === [] ? null : implode(', ', $parts);
+    }
+
+    /**
+     * Whole years of service since the hire date.
+     */
+    public function tenureInYears(): ?int
+    {
+        return $this->hire_date?->diffInYears(now());
+    }
+
+    /**
+     * Whether the probation window is still open.
+     */
+    public function isOnProbation(): bool
+    {
+        if ($this->status === 'probation') {
+            return true;
+        }
+
+        return $this->probation_end_date !== null && $this->probation_end_date->isFuture();
     }
 
     /**

@@ -13,6 +13,20 @@
         </a>
     </div>
 
+    @role('Super Admin')
+    <div class="mb-6 flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3">
+        <span class="material-symbols-outlined text-blue-500 text-[20px]">mail</span>
+        <div class="text-sm text-blue-800">
+            <p class="font-semibold">Adding someone who needs to sign in?</p>
+            <p class="text-blue-700 mt-0.5">
+                Invite them by email instead and they'll set their own password.
+                <a href="{{ route('team.index') }}" wire:navigate class="font-semibold underline">Go to Team</a>
+                — this form is for recording employment details.
+            </p>
+        </div>
+    </div>
+    @endrole
+
     <form wire:submit="save" class="bg-white rounded-lg shadow p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Personal Information -->
@@ -123,6 +137,8 @@
                 @error('role') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
         </div>
+
+        @include('livewire.employees.partials.hr-fields')
 
         <!-- Submit -->
         <div class="mt-6 flex items-center justify-end">

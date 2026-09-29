@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TaskAttachmentController;
 use App\Livewire\Accounts\AccountsDashboard;
 use App\Livewire\Accounts\OvertimeClaimList;
 use App\Livewire\Accounts\ProcurementList;
@@ -13,22 +14,23 @@ use App\Livewire\Departments\DepartmentList;
 use App\Livewire\Employees\CreateEmployee;
 use App\Livewire\Employees\EditEmployee;
 use App\Livewire\Employees\EmployeeList;
+use App\Livewire\Employees\EmployeeProfile;
+use App\Livewire\Folders\FolderManager;
 use App\Livewire\Leave\ApplyForLeave;
 use App\Livewire\Leave\LeaveApprovalQueue;
 use App\Livewire\Leave\LeaveBalance;
+use App\Livewire\License\RedeemLicense;
 use App\Livewire\Notifications\NotificationCenter;
 use App\Livewire\Payroll\PayrollHistory;
 use App\Livewire\Payroll\RunPayroll;
 use App\Livewire\Payroll\ViewPayslip;
-use App\Livewire\Folders\FolderManager;
-use App\Livewire\Tasks\TaskList;
+use App\Livewire\Plan\ManagePlan;
 use App\Livewire\Pricing\PricingPage;
-use App\Livewire\RealEstate\LeaseManager;
-use App\Livewire\RealEstate\MaintenanceBoard;
-use App\Livewire\RealEstate\PropertyDetail;
-use App\Livewire\RealEstate\PropertyList;
-use App\Livewire\RealEstate\RentInvoiceList;
-use App\Livewire\RealEstate\TenantList;
+use App\Livewire\Sales\SalesOrderDocument;
+use App\Livewire\Sales\SalesOrderList;
+use App\Livewire\Sales\TransportRequestList;
+use App\Livewire\Tasks\TaskList;
+use App\Livewire\Team\TeamMembers;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
@@ -41,6 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', EmployeeList::class)->name('index');
         Route::get('create', CreateEmployee::class)->name('create');
         Route::get('{employee}/edit', EditEmployee::class)->name('edit');
+        Route::get('{employee}', EmployeeProfile::class)->name('show');
     });
 
     Route::prefix('leave')->name('leave.')->middleware(['module:leave_management'])->group(function () {
@@ -65,6 +68,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('tasks')->name('tasks.')->middleware(['module:task_management'])->group(function () {
         Route::get('/', TaskList::class)->name('index');
+        Route::get('attachments/{attachment}', TaskAttachmentController::class)->name('attachments.download');
+    });
+
+    Route::prefix('sales')->name('sales.')->middleware(['module:sales'])->group(function () {
+        Route::get('/', SalesOrderList::class)->name('orders');
+        Route::get('transport', TransportRequestList::class)->name('transport');
+        // Printable document — opened in its own tab and printed (or saved as PDF).
+        Route::get('{order}/document', SalesOrderDocument::class)->name('orders.document');
     });
 
     Route::prefix('folders')->name('folders.')->group(function () {
@@ -93,14 +104,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('audit-logs', AuditLogViewer::class)->name('audit-logs');
     });
 
-    Route::prefix('real-estate')->name('real-estate.')->middleware(['module:real_estate'])->group(function () {
-        Route::get('properties', PropertyList::class)->name('properties.index');
-        Route::get('properties/{propertyId}', PropertyDetail::class)->name('properties.show');
-        Route::get('tenants', TenantList::class)->name('tenants.index');
-        Route::get('leases', LeaseManager::class)->name('leases.index');
-        Route::get('invoices', RentInvoiceList::class)->name('invoices.index');
-        Route::get('maintenance', MaintenanceBoard::class)->name('maintenance.index');
-    });
+    // Licence activation and plan changes — workspace owners only
+    Route::get('license', RedeemLicense::class)
+        ->middleware(['role:Super Admin'])
+        ->name('license.index');
+
+    Route::get('plan', ManagePlan::class)
+        ->middleware(['role:Super Admin'])
+        ->name('plan.index');
+
+    // Team invitations — workspace owners only
+    Route::get('team', TeamMembers::class)
+        ->middleware(['role:Super Admin'])
+        ->name('team.index');
+
 });
 
 require __DIR__.'/auth.php';

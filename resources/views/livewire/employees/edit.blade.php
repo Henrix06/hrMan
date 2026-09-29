@@ -124,6 +124,8 @@
             </div>
         </div>
 
+        @include('livewire.employees.partials.hr-fields')
+
         <!-- Submit -->
         <div class="mt-6 flex items-center justify-end gap-3">
             <a href="{{ route('employees.index') }}" wire:navigate

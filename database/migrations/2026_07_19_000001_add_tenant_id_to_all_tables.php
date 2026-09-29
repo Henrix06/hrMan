@@ -41,23 +41,6 @@ return new class extends Migration
                 $table->index('tenant_id');
             });
         }
-
-        // Real Estate tables: add company_id (references tenants.id)
-        $reTables = [
-            're_properties',
-            're_tenants',
-            're_leases',
-            're_rent_invoices',
-            're_maintenance_requests',
-        ];
-
-        foreach ($reTables as $table) {
-            Schema::table($table, function (Blueprint $table) {
-                $table->unsignedBigInteger('company_id')->nullable()->after('id');
-                $table->foreign('company_id')->references('id')->on('tenants')->nullOnDelete();
-                $table->index('company_id');
-            });
-        }
     }
 
     public function down(): void
@@ -93,22 +76,6 @@ return new class extends Migration
                 $table->dropForeign(['tenant_id']);
                 $table->dropIndex(['tenant_id']);
                 $table->dropColumn('tenant_id');
-            });
-        }
-
-        $reTables = [
-            're_properties',
-            're_tenants',
-            're_leases',
-            're_rent_invoices',
-            're_maintenance_requests',
-        ];
-
-        foreach ($reTables as $table) {
-            Schema::table($table, function (Blueprint $table) {
-                $table->dropForeign(['company_id']);
-                $table->dropIndex(['company_id']);
-                $table->dropColumn('company_id');
             });
         }
     }

@@ -12,9 +12,13 @@ class EmployeeList extends Component
     use WithPagination;
 
     public $search = '';
+
     public $statusFilter = '';
+
     public $departmentFilter = '';
+
     public $roleFilter = '';
+
     public $perPage = 10;
 
     protected $queryString = [
@@ -33,8 +37,9 @@ class EmployeeList extends Component
 
     public function deleteEmployee($employeeId): void
     {
-        if (!auth()->user()?->can('delete employee')) {
+        if (! auth()->user()?->can('delete employee')) {
             session()->flash('error', 'You do not have permission to delete employees.');
+
             return;
         }
 
@@ -52,14 +57,14 @@ class EmployeeList extends Component
             ->orderByDesc('created_at');
 
         $filters->apply($query, [
-            'search'     => $this->search,
-            'status'     => $this->statusFilter,
+            'search' => $this->search,
+            'status' => $this->statusFilter,
             'department' => $this->departmentFilter,
-            'role'       => $this->roleFilter,
+            'role' => $this->roleFilter,
         ]);
 
         return view('livewire.employees.index', [
-            'employees'   => $query->paginate($this->perPage),
+            'employees' => $query->paginate($this->perPage),
             'departments' => $filters->departments(),
         ]);
     }

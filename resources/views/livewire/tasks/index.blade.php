@@ -27,7 +27,7 @@
 
     {{-- Filters --}}
     <div class="glass-card rounded-[1.5rem] p-4 mb-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-center">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-center">
             <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search tasks..."
                 class="px-4 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none"/>
             <select wire:model.live="statusFilter" class="px-4 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none">
@@ -44,6 +44,12 @@
                 <option value="medium">Medium</option>
                 <option value="low">Low</option>
             </select>
+            <select wire:model.live="labelFilter" class="px-4 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none">
+                <option value="">All Labels</option>
+                @foreach($availableLabels as $label)
+                <option value="{{ $label }}">{{ $label }}</option>
+                @endforeach
+            </select>
             @if(!$isEmployee)
             <label class="flex items-center gap-2 text-sm font-semibold text-slate-600 cursor-pointer">
                 <input wire:model.live="myTasksOnly" type="checkbox" class="rounded"/> My Tasks
@@ -59,7 +65,6 @@
             $priorityColors = ['urgent'=>'bg-red-100 text-red-700','high'=>'bg-orange-100 text-orange-700','medium'=>'bg-amber-100 text-amber-700','low'=>'bg-slate-100 text-slate-600'];
             $statusColors = ['pending'=>'bg-amber-100 text-amber-700','in_progress'=>'bg-blue-100 text-blue-700','completed'=>'bg-green-100 text-green-700','cancelled'=>'bg-slate-100 text-slate-500'];
             $isOwner = $task->created_by === auth()->id();
-            $isReadOnly = !$isOwner && !auth()->user()->isHRAdmin();
             $isPrivate = $task->visibility === 'private';
         @endphp
         <div class="glass-card rounded-[1.5rem] p-4 md:p-5 {{ $isPrivate && !$isOwner ? 'border-l-4 border-slate-300' : '' }}">
@@ -83,6 +88,34 @@
                         @if($task->assignee && $task->assignee->id !== $task->creator->id) · Assigned to {{ $task->assignee->name }} @endif
                         @if($task->due_date) · Due {{ $task->due_date->format('M d, Y') }} @endif
                     </p>
+
+                    @if(!empty($task->labels))
+                    <div class="flex items-center gap-1.5 mt-2 flex-wrap">
+                        @foreach($task->labels as $label)
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-600 border border-indigo-100">{{ $label }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+
+                    @if($task->comments_count || $task->attachments_count || $task->watchers_count || $task->checklist_items_count)
+                    <div class="flex items-center gap-3 mt-2 text-[11px] text-slate-400">
+                        @if($task->checklist_items_count)
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[13px]">checklist</span>
+                            {{ $task->completed_checklist_items_count }}/{{ $task->checklist_items_count }}
+                        </span>
+                        @endif
+                        @if($task->comments_count)
+                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">chat_bubble</span>{{ $task->comments_count }}</span>
+                        @endif
+                        @if($task->attachments_count)
+                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">attach_file</span>{{ $task->attachments_count }}</span>
+                        @endif
+                        @if($task->watchers_count)
+                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">visibility</span>{{ $task->watchers_count }}</span>
+                        @endif
+                    </div>
+                    @endif
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                     @if($task->status !== 'completed' && $task->status !== 'cancelled' && ($isOwner || $task->assigned_to === auth()->id()))
@@ -215,69 +248,8 @@
     </div>
     @endif
 
-    {{-- Task Detail / Comments Modal --}}
+    {{-- Task Detail Drawer --}}
     @if($showTask && $activeTask)
-    @php $taskIsReadOnly = $activeTask->created_by !== auth()->id() && !auth()->user()->isHRAdmin(); @endphp
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-start justify-between mb-4">
-                <div class="min-w-0 flex-1">
-                    <div class="flex items-center gap-2 mb-1 flex-wrap">
-                        <h3 class="text-xl md:text-2xl font-bold font-headline text-slate-900">{{ $activeTask->title }}</h3>
-                        @if($activeTask->visibility === 'private')
-                        <span class="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">
-                            <span class="material-symbols-outlined text-[11px]">lock</span> Private
-                        </span>
-                        @endif
-                    </div>
-                    <p class="text-sm text-slate-500">
-                        Created by {{ $activeTask->creator->name }}
-                        @if($activeTask->assignee) · Assigned to {{ $activeTask->assignee->name }} @endif
-                    </p>
-                </div>
-                <button wire:click="$set('showTask', false)" class="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors flex-shrink-0">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-
-            @if($activeTask->description)
-            <p class="text-slate-600 text-sm mb-6 bg-slate-50 rounded-xl p-4">{{ $activeTask->description }}</p>
-            @endif
-
-            <h4 class="font-bold text-slate-800 mb-4">Comments ({{ $activeTask->comments->count() }})</h4>
-            <div class="space-y-4 mb-6">
-                @forelse($activeTask->comments as $comment)
-                <div class="flex gap-3">
-                    <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs flex-shrink-0">
-                        {{ strtoupper(substr($comment->user->name, 0, 2)) }}
-                    </div>
-                    <div class="flex-1 bg-slate-50 rounded-xl p-3">
-                        <div class="flex items-center justify-between mb-1">
-                            <p class="text-xs font-bold text-slate-700">{{ $comment->user->name }}</p>
-                            <div class="flex items-center gap-2">
-                                <p class="text-xs text-slate-400">{{ $comment->created_at->diffForHumans() }}</p>
-                                @if($comment->user_id === auth()->id() || auth()->user()->isHRAdmin())
-                                <button wire:click="deleteComment({{ $comment->id }})" class="text-slate-300 hover:text-error transition-colors">
-                                    <span class="material-symbols-outlined text-xs">delete</span>
-                                </button>
-                                @endif
-                            </div>
-                        </div>
-                        <p class="text-sm text-slate-600">{{ $comment->body }}</p>
-                    </div>
-                </div>
-                @empty
-                <p class="text-slate-400 text-sm text-center py-4">No comments yet.</p>
-                @endforelse
-            </div>
-
-            <form wire:submit="addComment" class="flex gap-3">
-                <input wire:model="commentBody" type="text" placeholder="Add a comment..."
-                    class="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none"/>
-                <button type="submit" class="bg-primary text-on-primary px-4 py-2 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity">Post</button>
-            </form>
-            @error('commentBody') <p class="text-error text-xs mt-1">{{ $message }}</p> @enderror
-        </div>
-    </div>
+        @include('livewire.tasks.partials.task-detail')
     @endif
 </div>

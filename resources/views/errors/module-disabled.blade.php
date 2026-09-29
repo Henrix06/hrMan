@@ -8,11 +8,20 @@
             The <strong>{{ ucwords(str_replace('_', ' ', $moduleKey ?? 'requested')) }}</strong> module is not included in your current plan.
             Upgrade to unlock this feature.
         </p>
+        @role('Super Admin')
+        <a href="{{ route('plan.index') }}"
+           class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-primary-dim transition-colors">
+            <span class="material-symbols-outlined text-[18px]">upgrade</span>
+            Upgrade your plan
+        </a>
+        @else
+        <p class="text-xs text-slate-400 max-w-md mb-3">Ask a workspace administrator to upgrade your plan.</p>
         <a href="{{ route('pricing') }}"
            class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-2xl font-semibold text-sm hover:bg-primary-dim transition-colors">
             <span class="material-symbols-outlined text-[18px]">upgrade</span>
             View Pricing Plans
         </a>
+        @endrole
         <a href="{{ route('dashboard') }}" class="mt-4 text-sm text-slate-400 hover:text-slate-600 transition-colors">
             Back to Dashboard
         </a>

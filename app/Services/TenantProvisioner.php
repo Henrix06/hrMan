@@ -17,53 +17,73 @@ class TenantProvisioner
 {
     public function provision(array $data): array
     {
-        return DB::transaction(function () use ($data) {
-            $subdomain = Str::slug($data['company_name'], '-');
-            $subdomain = Str::limit($subdomain, 30, '');
-            $original = $subdomain;
-            $attempt = 0;
-            while (Tenant::where('subdomain', $subdomain)->exists()) {
-                $attempt++;
-                $subdomain = $original . '-' . $attempt;
-            }
-
+        $result = DB::transaction(function () use ($data) {
             $tenant = Tenant::create([
-                'name'           => $data['company_name'],
-                'subdomain'      => $subdomain,
-                'plan'           => $data['plan'],
-                'billing_cycle'  => $data['billing_cycle'],
-                'status'         => 'active',
-                'trial_ends_at'  => now()->addDays(14),
-                'payment_method' => $data['payment_method'],
+                'name' => $data['company_name'],
+                'subdomain' => $this->uniqueSubdomain($data['company_name']),
+                'plan' => $data['plan'],
+                'billing_cycle' => $data['billing_cycle'] ?? 'monthly',
+                'status' => 'active',
+                'trial_ends_at' => now()->addDays((int) config('pricing.trial_days', 14)),
+                'payment_method' => $data['payment_method'] ?? ['type' => 'none'],
             ]);
 
             $user = User::create([
-                'name'        => $data['name'],
-                'email'       => $data['email'],
-                'password'    => Hash::make($data['password']),
-                'tenant_id'   => $tenant->id,
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'tenant_id' => $tenant->id,
                 'employee_id' => app(EmployeeIdGenerator::class)->next(),
-                'status'      => 'active',
-                'hire_date'   => now()->toDateString(),
-                'position'    => 'Administrator',
+                'status' => 'active',
+                'hire_date' => now()->toDateString(),
+                'position' => 'Administrator',
                 'email_verified_at' => now(),
             ]);
 
             $role = Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
             $user->assignRole($role);
 
-            $planModules = config("pricing.plans.{$data['plan']}.modules", []);
-            foreach ($planModules as $moduleKey) {
+            foreach (config("pricing.plans.{$data['plan']}.modules", []) as $moduleKey) {
                 TenantModule::create([
-                    'tenant_id'  => $tenant->id,
+                    'tenant_id' => $tenant->id,
                     'module_key' => $moduleKey,
                     'is_enabled' => true,
                 ]);
             }
 
-            Mail::to($user->email)->send(new WelcomeEmail($user, $tenant));
-
             return compact('tenant', 'user');
         });
+
+        // The workspace already exists at this point, so a mail failure must
+        // never surface as a signup failure.
+        try {
+            Mail::to($result['user']->email)->send(new WelcomeEmail($result['user'], $result['tenant']));
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Build a slugged, unique subdomain from the company name.
+     */
+    private function uniqueSubdomain(string $companyName): string
+    {
+        $subdomain = Str::limit(Str::slug($companyName, '-'), 30, '');
+
+        if ($subdomain === '') {
+            $subdomain = 'workspace';
+        }
+
+        $original = $subdomain;
+        $attempt = 0;
+
+        while (Tenant::where('subdomain', $subdomain)->exists()) {
+            $attempt++;
+            $subdomain = $original.'-'.$attempt;
+        }
+
+        return $subdomain;
     }
 }

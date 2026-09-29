@@ -77,7 +77,8 @@
                                     {{ strtoupper(substr($employee->name, 0, 2)) }}
                                 </div>
                                 <div>
-                                    <p class="font-bold text-slate-800">{{ $employee->name }}</p>
+                                    <a href="{{ route('employees.show', $employee) }}" wire:navigate
+                                        class="font-bold text-slate-800 hover:text-primary transition-colors">{{ $employee->name }}</a>
                                     <p class="text-xs text-slate-400">{{ $employee->email }}</p>
                                 </div>
                             </div>
@@ -99,6 +100,10 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
+                                <a href="{{ route('employees.show', $employee) }}" wire:navigate
+                                    class="p-2 rounded-xl text-slate-400 hover:text-primary hover:bg-slate-50 transition-colors" title="View profile">
+                                    <span class="material-symbols-outlined text-sm">person</span>
+                                </a>
                                 <a href="{{ route('employees.edit', $employee) }}" wire:navigate
                                     class="p-2 rounded-xl text-slate-400 hover:text-primary hover:bg-slate-50 transition-colors" title="Edit">
                                     <span class="material-symbols-outlined text-sm">edit</span>
